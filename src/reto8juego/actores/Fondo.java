@@ -40,8 +40,8 @@ public class Fondo extends Dibujo {
 	}
 
 	@Override
-	public void nuevoFotograma(int frame, long delta) {
-			y+= delta/1000d * 10;
+	public void nuevoFotograma(int frame, long delta, float deltaSegundo) {
+			y+= deltaSegundo * 10;
 	}
 
 }

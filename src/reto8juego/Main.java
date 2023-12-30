@@ -3,10 +3,6 @@
  */
 package reto8juego;
 
-import reto8juego.gui.Ventana;
-import reto8juego.motor.Motor;
-import reto8juego.recursos.Recursos;
-
 /**
  * 
  * @author Jose Javier Bailon Ortiz
