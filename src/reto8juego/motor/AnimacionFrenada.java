@@ -9,16 +9,17 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public class AnimacionFrenada extends Thread {
+public class AnimacionFrenada extends Animacion {
 	long duracion;
 	float valorA;
 	float valorB;
 	float rango;
 	Funcion callback;
-	AtomicInteger valorFinal;
 	boolean terminado = false;
-
+	Motor motor;
+	
 	public AnimacionFrenada(long duracion, float valorA, float valorB, Funcion callback) {
+		motor=Motor.getInstancia();
 		this.duracion = duracion;
 		this.valorA = valorA;
 		this.valorB = valorB;
@@ -29,10 +30,10 @@ public class AnimacionFrenada extends Thread {
 
 	@Override
 	public void run() {
-		long inicio = System.currentTimeMillis();
+		long inicio = motor.getTiempo();
 		boolean terminar = false;
 		while (!terminar) {
-			long ahora = System.currentTimeMillis();
+			long ahora = motor.getTiempo();
 			float delta = (float) (ahora - inicio) / (float) duracion;
 			if (delta > 1) {
 				setValor(valorB);

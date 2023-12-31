@@ -9,10 +9,13 @@ import java.awt.event.KeyListener;
 import reto8juego.actores.Fondo;
 import reto8juego.actores.Nave;
 import reto8juego.actores.TextoCentrado;
-import reto8juego.config.Strings;
+import reto8juego.escenas.Inicio;
+import reto8juego.escenas.Partida;
 import reto8juego.gui.Ventana;
+import reto8juego.motor.Escena;
 import reto8juego.motor.Motor;
 import reto8juego.recursos.Recursos;
+import reto8juego.recursos.Strings;
 
 /**
  * 
@@ -26,22 +29,19 @@ public class Controlador implements KeyListener {
 	Ventana ventana;
 	Motor motor;
 	private int estado = INICIO;
-	public static Controlador CONTROL;
-	
-	TextoCentrado t;
+
+	TextoCentrado textoCentrado;
 	
 	public Controlador() {
-		CONTROL=this;
 		//cargar recursos
 		Recursos.getInstancia().cargarRecursos();
 		//crear motor
 		motor = Motor.getInstancia();
 		//crear ventana
-		ventana = new Ventana(this,motor);
+		ventana = new Ventana(this);
+		motor.setLienzo(ventana.getLienzo());
 		pantallaInicial();
 	}
-	
-	
 	
 	
 	/**
@@ -49,13 +49,8 @@ public class Controlador implements KeyListener {
 	 */
 	private void pantallaInicial() {
 		estado=INICIO;
-		motor.vaciar();
-		motor.agregarCapaFondo(new Fondo());
-		t = new TextoCentrado(Strings.TEXTO_INICIA_PARTIDA);
-		motor.agregarCapaGui(t);
-		motor.play();
+		motor.setEscena(new Inicio(this,() -> iniciarPartida()));
 	}
-
 
  
 	/**
@@ -63,9 +58,7 @@ public class Controlador implements KeyListener {
 	 */
 	public void iniciarPartida() {
 		estado=JUGANDO;
- 		motor.vaciar();
- 		motor.agregarCapaNave(new Nave());
-	
+		motor.setEscena(new Partida(this,null));
 	}
 
 
@@ -75,7 +68,7 @@ public class Controlador implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		int kc=e.getKeyCode();
+		motor.getEscena().keyPressed(e);
 		
 	}
 
@@ -84,10 +77,7 @@ public class Controlador implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		int kc=e.getKeyCode();
-		if (estado==INICIO && kc==e.VK_SPACE)
-			t.animacionSalida(() -> iniciarPartida());
-		
+		motor.getEscena().keyReleased(e);
 	}
 	
 
@@ -96,7 +86,7 @@ public class Controlador implements KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		
+		motor.getEscena().keyTyped(e);
 	}
 
 }

@@ -5,8 +5,7 @@ package reto8juego.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+
 
 import javax.swing.JFrame;
 
@@ -22,20 +21,26 @@ public class Ventana extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private Controlador control;
-	public Ventana(Controlador control,Motor motor) {
+	private Lienzo lienzo;
+	public Ventana(Controlador control) {
 		this.control=control;
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(Config.ANCHO, Config.ALTO);
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
 		//agregar lienzo
-		Lienzo l = new Lienzo(motor);
-		l.setBackground(Color.GREEN);
-		this.add(l,BorderLayout.CENTER);
+		lienzo = new Lienzo();
+		this.add(lienzo,BorderLayout.CENTER);
 		
 		//asignar lienzo al motor
-		motor.setLienzo(l);
 		this.setVisible(true);
 		this.addKeyListener(control);
 	}
+	/**
+	 * @return
+	 */
+	public Lienzo getLienzo() {
+		return lienzo;
+	}
+ 
 }

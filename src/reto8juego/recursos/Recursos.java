@@ -36,7 +36,17 @@ public class Recursos {
 			"nave11",
 			"nave12",
 			"nave13",
-			"nave14"
+			"nave14",
+			"disparoAmigo",
+			"meteorito0",
+			"meteorito1",
+			"meteorito2",
+			"expmeteo0",
+			"expmeteo1",
+			"expmeteo2",
+			"expmeteo3",
+			"expmeteo4",
+			"expmeteo5"
 			};
 	private String[]listaFuentes= {"CHECKBK0","COMPUTERRobot","plasmati"};
 	
@@ -62,7 +72,9 @@ public class Recursos {
 	private boolean cargarFuentes() {
 		for (String nombre : listaFuentes) {
 			try {
-				Font fuente =Font.createFont(Font.TRUETYPE_FONT,getClass().getResource(nombre+".ttf").openStream());
+				Font fuente =Font.createFont(Font.TRUETYPE_FONT,Recursos.class.getResourceAsStream("fuentes/"+nombre+".ttf"));
+
+//				Font fuente =Font.createFont(Font.TRUETYPE_FONT,getClass().getResource(nombre+".ttf").openStream());
 				fuentes.put(nombre, fuente);
 			} catch (IOException e) {
 				return false;
@@ -76,7 +88,9 @@ public class Recursos {
 	private boolean cargarImg() {
 		for (String nombre : listaImg) {
 			try {
-				BufferedImage img =ImageIO.read(getClass().getResource(nombre+".png"));
+				BufferedImage img =ImageIO.read(Recursos.class.getResourceAsStream("img/"+nombre+".png"));
+
+				//BufferedImage img =ImageIO.read(getClass().getResource(nombre+".png"));
 				imagenes.put(nombre, img);
 			} catch (IOException e) {
 				return false;

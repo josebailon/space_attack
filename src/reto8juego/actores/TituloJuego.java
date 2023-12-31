@@ -14,38 +14,35 @@ import reto8juego.motor.Dibujo;
 import reto8juego.motor.Funcion;
 import reto8juego.recursos.Colores;
 import reto8juego.recursos.Recursos;
+import reto8juego.recursos.Strings;
 
 /**
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public class TextoCentrado extends Dibujo {
+public class TituloJuego extends Dibujo {
 	String texto;
 	Font fuente;
-	
-	
-	long tiempoInicio;
-	int duracion=0;
+	long inicio;
+	int duracion = 0;
 
-	public TextoCentrado(String texto, boolean animado,int duracion) {
-		super((double) Config.CENTRO_ANCHO, (double) Config.CENTRO_ALTO);
-		this.texto = texto;
-		this.duracion=duracion;
-		opacidad=0;
-		fuente = Recursos.getInstancia().getFuente("plasmati").deriveFont(Config.T_LETRA_1);
-		if (animado) {
-			tiempoInicio=motor.getTiempo();
-			animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 0, 254, () -> animacionOpacidad=null);
-			animacionOpacidad.start();
-			animacionY=new AnimacionFrenada(Config.DURACION_TRANSICION, Config.CENTRO_ALTO-100, Config.CENTRO_ALTO, null);
-			animacionY.start();
-		}
+	public TituloJuego() {
+		super((double) Config.CENTRO_ANCHO, (double) Config.ALTURA_TITULO);
+		this.texto = Strings.TITULO_JUEGO;
+		fuente = Recursos.getInstancia().getFuente("COMPUTERRobot").deriveFont(Config.T_LETRA_0);
+		
+		//animar opacidad a la entrada
+		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 0, 254, () -> animacionOpacidad = null);
+		animacionOpacidad.start();
+
 	}
 
 	public void animacionSalida(Funcion f) {
-		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 254, 0, () -> f.apply());
+		//animar opacidad y vertical en la salida
+		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 254, 0, f);
 		animacionOpacidad.start();
-		animacionY=new AnimacionFrenada(Config.DURACION_TRANSICION, Config.CENTRO_ALTO, Config.CENTRO_ALTO+100, null);
+		animacionY = new AnimacionFrenada(Config.DURACION_TRANSICION, Config.ALTURA_TITULO, Config.ALTURA_TITULO+ 100,
+				null);
 		animacionY.start();
 	}
 
@@ -70,12 +67,6 @@ public class TextoCentrado extends Dibujo {
 	@Override
 	public void nuevoFotograma(int frame, long delta, float deltaSegundo) {
 		super.nuevoFotograma(frame, delta, deltaSegundo);
-		if (animacionOpacidad != null)
-			opacidad = animacionOpacidad.getValor();
-		if (animacionOpacidad==null && duracion>0)
-			if (motor.getTiempo()>tiempoInicio+Config.DURACION_TRANSICION+duracion) {
-				animacionSalida(() -> vivo=false);
-			}
 	}
 
 }

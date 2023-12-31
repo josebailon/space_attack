@@ -1,7 +1,7 @@
 /**
  * 
  */
-package reto8juego.config;
+package reto8juego.recursos;
 
 import java.awt.Color;
 

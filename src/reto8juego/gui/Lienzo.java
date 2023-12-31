@@ -7,12 +7,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import javax.swing.JPanel;
 
-import reto8juego.actores.Dibujo;
-import reto8juego.motor.Motor;
+import reto8juego.motor.Dibujo;
+import reto8juego.recursos.Recursos;
 
 /**
  * 
@@ -24,11 +28,11 @@ public class Lienzo extends JPanel implements ActionListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	Motor motor;
-	
+	ArrayList<LinkedBlockingDeque<Dibujo>> capas = new ArrayList();
 
-	public Lienzo(Motor motor) {
-		this.motor=motor;
+	float i=0;
+	public Lienzo() {
+
 	}
 
 
@@ -37,27 +41,12 @@ public class Lienzo extends JPanel implements ActionListener {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2=(Graphics2D) g;
-		
-		
-		//fondo
-		Iterator<Dibujo> capaFondo = motor.getCapaFondo();
-		while (capaFondo.hasNext()) {
-			capaFondo.next().dibujar(g2);
+		for (LinkedBlockingDeque<Dibujo> capa : capas) {
+			Iterator<Dibujo> it =capa.iterator();
+			while (it.hasNext()) {
+				it.next().dibujar(g2);
+			}
 		}
-		//nave
-		Iterator<Dibujo> capaNave= motor.getCapaNave();
-		while (capaNave.hasNext()) {
-			capaNave.next().dibujar(g2);
-		}
-
-		
-		//nave
-		Iterator<Dibujo> capaGui= motor.getCapaGui();
-		while (capaGui.hasNext()) {
-			capaGui.next().dibujar(g2);
-		}
-		
-		
 
 	}
 
@@ -67,6 +56,15 @@ public class Lienzo extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 //		y+=0.5;
 //		repaint();
+	}
+
+
+
+	/**
+	 * @param capaFondo
+	 */
+	public void addCapa(LinkedBlockingDeque<Dibujo> capa) {
+		this.capas.add(capa);
 	}
 
 	
