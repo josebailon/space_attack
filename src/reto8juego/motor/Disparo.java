@@ -1,14 +1,13 @@
 /**
  * 
  */
-package reto8juego.actores;
+package reto8juego.motor;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
-import reto8juego.motor.Dibujo;
 import reto8juego.recursos.Recursos;
 
 /**
@@ -52,6 +51,10 @@ public class Disparo extends Dibujo {
 	 */
 	public int getFuerza() {
 		return fuerza;
+	}
+	
+	public void impactado() {
+		this.vivo=false;
 	}
 
 }

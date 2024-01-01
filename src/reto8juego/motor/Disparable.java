@@ -7,7 +7,14 @@ package reto8juego.motor;
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public interface Disparable {
+public interface Disparable extends Colisionable{
 	
-	public boolean impacto(double x, double y, int fuerza);
+	/**
+	 * Devuelve si un disparo en esa posicion lo impacta
+	 * @param x
+	 * @param y
+	 * @param fuerza
+	 * @return
+	 */
+	public boolean impactoDisparo(Disparo disparo);
 }

@@ -3,6 +3,7 @@
  */
 package reto8juego.actores;
 
+import reto8juego.motor.Disparo;
 import reto8juego.recursos.Recursos;
 
 /**

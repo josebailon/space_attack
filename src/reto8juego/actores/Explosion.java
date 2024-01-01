@@ -13,18 +13,19 @@ import reto8juego.recursos.Recursos;
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public class ExplosionMeteorito extends Dibujo{
+public class Explosion extends Dibujo{
+	public static final  String METEORITO="expmeteo";
+	public static final  String NAVE="expnave";
 	
-	 
 
-	BufferedImage[] fotogramas = new BufferedImage[6];
+	BufferedImage[] fotogramas = new BufferedImage[9];
 	int fotogramaActual=0;
 	
-	public ExplosionMeteorito(double x,double y) {
+	public Explosion(double x,double y,String nombre) {
 		super(x,y);
 		Recursos r = Recursos.getInstancia();
 		for (int i = 0; i < fotogramas.length; i++) {
-			fotogramas[i] = r.getImg("expmeteo" + i);
+			fotogramas[i] = r.getImg(nombre + i);
 		}
 		ancho = fotogramas[0].getWidth();
 		alto = fotogramas[0].getHeight();

@@ -39,8 +39,7 @@ public class Inicio extends Escena{
 	@Override
 	public void iniciar() {
 		motor.vaciarCapas();
-		motor.agregarCapaFondo(new Fondo());
-		textoCentrado = new TextoCentrado(Strings.TEXTO_INICIA_PARTIDA,true,0);
+		textoCentrado = new TextoCentrado(Strings.TEXTO_INICIA_PARTIDA,true,0,() -> terminar());
 		motor.agregarCapaGui(textoCentrado);
 		textoTitulo= new TituloJuego();
 		motor.agregarCapaGui(textoTitulo);
@@ -64,8 +63,8 @@ public class Inicio extends Escena{
 		int kc=e.getKeyCode();
 		if (kc==e.VK_SPACE) {
 			controlActivo=false;
-			textoCentrado.animacionSalida(() -> terminar());
-			textoTitulo.animacionSalida(null);
+			textoCentrado.animacionSalida();
+			textoTitulo.animacionSalida();
 		}
 	}
 

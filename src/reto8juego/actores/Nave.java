@@ -6,8 +6,11 @@ package reto8juego.actores;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import reto8juego.escenas.Partida;
+import reto8juego.motor.Colisionable;
 import reto8juego.motor.Dibujo;
 import reto8juego.recursos.Recursos;
 
@@ -15,29 +18,38 @@ import reto8juego.recursos.Recursos;
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public class Nave extends Dibujo {
+public class Nave extends Dibujo implements Colisionable{
 	final int FOTOGRAMA_CENTRO=7;
 	final int FOTOGRAMA_IZQUIERDA=0;
 	final int FOTOGRAMA_DERECHA=14;
+	
+	
 	BufferedImage[] fotogramas = new BufferedImage[15];
+	BufferedImage imgEscudo;
+	Partida partida;
 	AtomicInteger velX = new AtomicInteger();
 	AtomicInteger velY = new AtomicInteger();
 	AtomicInteger velocidad = new AtomicInteger(400);
 	AtomicInteger fotogramaDestino=new AtomicInteger(FOTOGRAMA_CENTRO);
 	AtomicInteger fotogramaActual=new AtomicInteger(FOTOGRAMA_CENTRO);
-	
 	int fuerzaDisparo=1;
-
-	public Nave() {
+	AtomicInteger salud = new AtomicInteger(100);
+	AtomicInteger nivelEscudo=new AtomicInteger(1);
+	
+	
+	
+	public Nave(Partida partida) {
 		super(400d, 1124d);
 		Recursos r = Recursos.getInstancia();
 		for (int i = 0; i < fotogramas.length; i++) {
 			fotogramas[i] = r.getImg("nave" + i);
 		}
+		imgEscudo = r.getImg("escudo");
 		ancho = fotogramas[0].getWidth();
 		alto = fotogramas[0].getHeight();
 		mitadAlto = alto / 2;
 		mitadAncho = ancho / 2;
+		this.partida=partida;
 	}
 
 	@Override
@@ -46,6 +58,11 @@ public class Nave extends Dibujo {
 		at.translate(x - mitadAncho, y - mitadAlto);
 		g2d.drawImage(fotogramas[fotogramaActual.get()], at, null);
 		at.setToIdentity();
+		if (nivelEscudo.get()>0) {
+			at.translate(x - mitadAncho, y - mitadAncho);
+			g2d.drawImage(imgEscudo, at, null);
+			at.setToIdentity();
+		}
 	}
 
 	@Override
@@ -103,6 +120,66 @@ public class Nave extends Dibujo {
 	 */
 	public void disparar() {
 		motor.agregarCapaDisparosAmigos(new DisparoAmigo(x, y, fuerzaDisparo));
+	}
+
+	@Override
+	public void matar() {
+		salud.set(0);
+		//generar explosion y morir
+		motor.agregarCapaFx(new Explosion(x, y, Explosion.NAVE));
+		vivo=false;
+		partida.naveDestruida();
+	}
+
+	@Override
+	public int getFuerza() {
+		return salud.get();
+	}
+
+	@Override
+	public int getRadio() {
+		return mitadAlto;
+	}
+
+	@Override
+	public boolean colisiona(Colisionable otro) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void golpear(int fuerza) {
+		if (nivelEscudo.get()>0)
+			return;
+		salud.addAndGet(-fuerza);
+		if (salud.get()<=0)
+				matar();
+	}
+
+	/**
+	 * @param b
+	 * @return
+	 */
+	public void setEscudoActivo(boolean activo) {
+		if (activo)
+		nivelEscudo.incrementAndGet();
+		else
+		nivelEscudo.decrementAndGet();
+	}
+
+	/**
+	 * @return
+	 */
+	public float getSalud() {
+		return salud.get();
+	}
+
+	/**
+	 * @param i
+	 */
+	public void agregarSalud(int i) {
+			if (salud.addAndGet(i)>100)
+				salud.set(100);
 	}
 
 }

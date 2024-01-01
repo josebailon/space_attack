@@ -47,7 +47,7 @@ public class Controlador implements KeyListener {
 	/**
 	 * 
 	 */
-	private void pantallaInicial() {
+	public void pantallaInicial() {
 		estado=INICIO;
 		motor.setEscena(new Inicio(this,() -> iniciarPartida()));
 	}
@@ -56,7 +56,7 @@ public class Controlador implements KeyListener {
 	/**
 	 * 
 	 */
-	public void iniciarPartida() {
+	private void iniciarPartida() {
 		estado=JUGANDO;
 		motor.setEscena(new Partida(this,null));
 	}

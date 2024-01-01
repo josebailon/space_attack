@@ -8,11 +8,11 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
+import reto8juego.config.Colores;
 import reto8juego.config.Config;
 import reto8juego.motor.AnimacionFrenada;
 import reto8juego.motor.Dibujo;
 import reto8juego.motor.Funcion;
-import reto8juego.recursos.Colores;
 import reto8juego.recursos.Recursos;
 
 /**
@@ -22,31 +22,38 @@ import reto8juego.recursos.Recursos;
 public class TextoCentrado extends Dibujo {
 	String texto;
 	Font fuente;
-	
-	
 	long tiempoInicio;
-	int duracion=0;
+	int duracion = 0;
+	Funcion funcionSalida;
+	boolean saliendo = false;
 
-	public TextoCentrado(String texto, boolean animado,int duracion) {
+	
+	public TextoCentrado() {
+	}
+
+	public TextoCentrado(String texto, boolean animada, int duracion, Funcion funcionSalida) {
 		super((double) Config.CENTRO_ANCHO, (double) Config.CENTRO_ALTO);
 		this.texto = texto;
-		this.duracion=duracion;
-		opacidad=0;
+		this.duracion = duracion;
+		opacidad = 254;
 		fuente = Recursos.getInstancia().getFuente("plasmati").deriveFont(Config.T_LETRA_1);
-		if (animado) {
-			tiempoInicio=motor.getTiempo();
-			animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 0, 254, () -> animacionOpacidad=null);
-			animacionOpacidad.start();
-			animacionY=new AnimacionFrenada(Config.DURACION_TRANSICION, Config.CENTRO_ALTO-100, Config.CENTRO_ALTO, null);
-			animacionY.start();
+		this.funcionSalida = funcionSalida;
+		tiempoInicio = motor.getTiempo();
+		if (animada) {
+		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 0, 254, () -> animacionOpacidad = null);
+		animacionY = new AnimacionFrenada(Config.DURACION_TRANSICION, Config.CENTRO_ALTO - 100, Config.CENTRO_ALTO,
+				() -> animacionY = null);
 		}
 	}
 
-	public void animacionSalida(Funcion f) {
-		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 254, 0, () -> f.apply());
-		animacionOpacidad.start();
-		animacionY=new AnimacionFrenada(Config.DURACION_TRANSICION, Config.CENTRO_ALTO, Config.CENTRO_ALTO+100, null);
-		animacionY.start();
+	public void animacionSalida() {
+		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 254, 0, () -> {
+			if (funcionSalida != null)
+				funcionSalida.apply();
+			vivo = false;
+		});
+		animacionY = new AnimacionFrenada(Config.DURACION_TRANSICION, Config.CENTRO_ALTO, Config.CENTRO_ALTO + 100,
+				null);
 	}
 
 	@Override
@@ -57,8 +64,8 @@ public class TextoCentrado extends Dibujo {
 		int alto = metrics.getHeight();
 		g2d.setColor(new Color(0, 0, 0, (int) opacidad));
 		g2d.drawString(texto, (int) (x - (ancho / 2) + 2), (int) (y - (alto / 2) + 2));
-		g2d.setColor(Colores.caraTexto);
-		Color c = Colores.caraTexto;
+		g2d.setColor(Colores.CARA_TEXTO);
+		Color c = Colores.CARA_TEXTO;
 		try {
 			g2d.setPaint(new Color((int) c.getRed(), (int) c.getGreen(), (int) c.getBlue(), (int) opacidad));
 		} catch (Exception e) {
@@ -72,10 +79,10 @@ public class TextoCentrado extends Dibujo {
 		super.nuevoFotograma(frame, delta, deltaSegundo);
 		if (animacionOpacidad != null)
 			opacidad = animacionOpacidad.getValor();
-		if (animacionOpacidad==null && duracion>0)
-			if (motor.getTiempo()>tiempoInicio+Config.DURACION_TRANSICION+duracion) {
-				animacionSalida(() -> vivo=false);
-			}
+		if (duracion!=0 && !saliendo && motor.getTiempo() > tiempoInicio + Config.DURACION_TRANSICION + duracion) {
+			saliendo = true;
+			animacionSalida();
+		}
 	}
 
 }

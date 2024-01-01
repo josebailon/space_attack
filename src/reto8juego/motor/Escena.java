@@ -28,4 +28,6 @@ abstract public class Escena {
  	abstract public void keyPressed(KeyEvent e);
 	abstract public void keyReleased(KeyEvent e);	
 	abstract public void keyTyped(KeyEvent e);
+
+ 
 }

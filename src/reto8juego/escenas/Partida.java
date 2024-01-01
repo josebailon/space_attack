@@ -9,9 +9,13 @@ import reto8juego.Controlador;
 import reto8juego.actores.GeneradorMeteoritos;
 import reto8juego.actores.Nave;
 import reto8juego.actores.TextoCentrado;
+import reto8juego.actores.TextoPausa;
+import reto8juego.actores.VisorPuntos;
+import reto8juego.actores.VisorSalud;
 import reto8juego.motor.AnimacionFrenada;
 import reto8juego.motor.Escena;
 import reto8juego.motor.Funcion;
+import reto8juego.motor.Temporizador;
 import reto8juego.recursos.Strings;
 
 /**
@@ -19,21 +23,21 @@ import reto8juego.recursos.Strings;
  * @author Jose Javier Bailon Ortiz
  */
 public class Partida extends Escena {
-	TextoCentrado textoPausa;
-	int puntos = 0;
-	Nave nave;
+	TextoPausa textoPausa;
+ 	int puntos = 0;
+	private Nave nave;
+	private int vidas=3;
 	/**
 	 * La partida responde o no al teclado
 	 */
 	boolean controlActivo = false;
 	int nivel = 1;
-
 	boolean arriba = false;
 	boolean abajo = false;
 	boolean izquierda = false;
 	boolean derecha = false;
-	GeneradorMeteoritos generadorMeteoritos = new GeneradorMeteoritos(this);
-
+	GeneradorMeteoritos generadorMeteoritos;
+	int oleadasRestantes=1;
 	/**
 	 * @param control
 	 * @param callbackTerminado
@@ -41,16 +45,15 @@ public class Partida extends Escena {
 	public Partida(Controlador control, Funcion callbackTerminado) {
 		super(control, callbackTerminado);
 		iniciar();
-
 	}
 
 	/**
 	 * 
 	 */
 	private void iniciarNivel() {
-		nave.setAnimacionY(null);
-		controlActivo = true;
+		generadorMeteoritos = new GeneradorMeteoritos(this);
 		generadorMeteoritos.start();
+		new Temporizador(3, ()->siguienteOleada());
 	}
 
 	@Override
@@ -58,23 +61,57 @@ public class Partida extends Escena {
 		motor.vaciarCapas();
 		controlActivo = false;
 		nivel = 1;
+		
+		addNave();
+		motor.agregarCapaGui(new TextoCentrado(Strings.NIVEL+" "+nivel, true, 2000,null));
+		iniciarNivel();
+		addGUI();
+	
+	}
+
+	/**
+	 * @return
+	 */
+	private Object siguienteOleada() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private void resetControl() {
 		arriba = false;
 		abajo = false;
 		izquierda = false;
 		derecha = false;
-		nave = new Nave();
+	}
+	
+	/**
+	 * 
+	 */
+	private void addNave() {
+		resetControl();
+		controlActivo=false;
+		nave = new Nave(this);
 		motor.agregarCapaNave(nave);
 		nave.setAnimacionY(new AnimacionFrenada(2000, 1124, 700, () -> {
-			iniciarNivel();
+			nave.setAnimacionY(null);
+			controlActivo = true;
 		}));
-		nave.getAnimacionY().start();
-		motor.agregarCapaGui(new TextoCentrado(Strings.NIVEL+" "+nivel, true, 2000));
-
+		new Temporizador(3000,()->nave.setEscudoActivo(false));
+	}
+ 
+	/**
+	 * 
+	 */
+	private void addGUI() {
+		motor.agregarCapaGui(new VisorSalud(this));
+		motor.agregarCapaGui(new VisorPuntos(this));
+		
 	}
 
 	@Override
 	public void terminar() {
-		// TODO Auto-generated method stub
+		generadorMeteoritos.terminar();
+		motor.agregarCapaGui(new TextoCentrado(Strings.GAME_OVER, true, 2000,()->control.pantallaInicial()));
 
 	}
 
@@ -100,7 +137,7 @@ public class Partida extends Escena {
 
 		if (kc == e.VK_P) {
 			if (!motor.togglePlay()) {
-				textoPausa = new TextoCentrado("PAUSA", false,0);
+				textoPausa = new TextoPausa();
 				motor.agregarCapaGui(textoPausa);
 				motor.repintar();
 			} else {
@@ -134,4 +171,53 @@ public class Partida extends Escena {
 		return nivel;
 	}
 
+	public Nave getNave() {
+		return nave;
+	}
+
+	/**
+	 * 
+	 */
+	public void naveDestruida() {
+		vidas--;
+		if (vidas>0) {
+			addNave();
+		}
+		else {
+			terminar();
+		}
+		
+	}
+
+	/**
+	 * @param puntos
+	 */
+	public void agregarPuntos(int puntos) {
+		this.puntos+=puntos;
+		
+	}
+
+	/**
+	 * @return
+	 */
+	public int getPuntos() {
+		return puntos;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getVidas() {
+		return vidas;
+	}
+
+	/**
+	 * 
+	 */
+	public void agregarVida() {
+		vidas++;
+		
+	}
+
+	
 }

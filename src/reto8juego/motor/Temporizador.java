@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public class AnimacionFrenada extends Animacion {
+public class Temporizador extends Animacion {
 	long duracion;
 	float valorA;
 	float valorB;
@@ -17,15 +17,11 @@ public class AnimacionFrenada extends Animacion {
 	Funcion callback;
 	boolean terminado = false;
 	Motor motor;
-	
-	public AnimacionFrenada(long duracion, float valorA, float valorB, Funcion callback) {
-		motor=Motor.getInstancia();
+
+	public Temporizador(long duracion, Funcion callback) {
+		motor = Motor.getInstancia();
 		this.duracion = duracion;
-		this.valorA = valorA;
-		this.valorB = valorB;
-		this.rango = valorB - valorA;
-		this.valorFinal =  valorA;
-		this.callback=callback;
+		this.callback = callback;
 		this.start();
 	}
 
@@ -36,30 +32,17 @@ public class AnimacionFrenada extends Animacion {
 		while (!terminar) {
 			long ahora = motor.getTiempo();
 			float delta = (float) (ahora - inicio) / (float) duracion;
-			if (delta > 1) {
-				setValor(valorB);
+			if (motor.getTiempo() > inicio + duracion) {
 				terminar = true;
 			} else {
-				setValor((float) (valorA + (-(Math.cos(Math.PI * delta) - 1) / 2) * rango));
 				try {
 					sleep(10);
 				} catch (InterruptedException e) {
-
+					terminar=true;
 				}
 			}
 		}
-		if (callback!=null)
+		if (callback != null)
 			callback.apply();
 	}
-
-	public float getValor() {
-		return valorFinal;
-	}
-
-	private void setValor(float v) {
-		this.valorFinal=v;
-		
-	}
-
- 
 }

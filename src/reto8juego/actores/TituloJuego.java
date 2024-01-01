@@ -8,11 +8,11 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
+import reto8juego.config.Colores;
 import reto8juego.config.Config;
 import reto8juego.motor.AnimacionFrenada;
 import reto8juego.motor.Dibujo;
 import reto8juego.motor.Funcion;
-import reto8juego.recursos.Colores;
 import reto8juego.recursos.Recursos;
 import reto8juego.recursos.Strings;
 
@@ -33,17 +33,14 @@ public class TituloJuego extends Dibujo {
 		
 		//animar opacidad a la entrada
 		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 0, 254, () -> animacionOpacidad = null);
-		animacionOpacidad.start();
 
 	}
 
-	public void animacionSalida(Funcion f) {
+	public void animacionSalida() {
 		//animar opacidad y vertical en la salida
-		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 254, 0, f);
-		animacionOpacidad.start();
+		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 254, 0, null);
 		animacionY = new AnimacionFrenada(Config.DURACION_TRANSICION, Config.ALTURA_TITULO, Config.ALTURA_TITULO+ 100,
 				null);
-		animacionY.start();
 	}
 
 	@Override
@@ -54,8 +51,8 @@ public class TituloJuego extends Dibujo {
 		int alto = metrics.getHeight();
 		g2d.setColor(new Color(0, 0, 0, (int) opacidad));
 		g2d.drawString(texto, (int) (x - (ancho / 2) + 2), (int) (y - (alto / 2) + 2));
-		g2d.setColor(Colores.caraTexto);
-		Color c = Colores.caraTexto;
+		g2d.setColor(Colores.CARA_TEXTO);
+		Color c = Colores.CARA_TEXTO;
 		try {
 			g2d.setPaint(new Color((int) c.getRed(), (int) c.getGreen(), (int) c.getBlue(), (int) opacidad));
 		} catch (Exception e) {

@@ -8,8 +8,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicLong;
 
-import reto8juego.actores.Disparo;
+import reto8juego.actores.Fondo;
+import reto8juego.actores.Meteorito;
+import reto8juego.actores.Nave;
 import reto8juego.config.Config;
+import reto8juego.escenas.Partida;
 import reto8juego.gui.Lienzo;
 
 /**
@@ -35,10 +38,11 @@ public class Motor extends Thread {
 	private LinkedBlockingDeque<Disparo> capaDisparosAmigos = new LinkedBlockingDeque<Disparo>();
 	private LinkedBlockingDeque<Dibujo> capaNave = new LinkedBlockingDeque<Dibujo>();
 	private LinkedBlockingDeque<Dibujo> capaMeteoritos = new LinkedBlockingDeque<Dibujo>();
+	private LinkedBlockingDeque<Dibujo> capaPremios= new LinkedBlockingDeque<Dibujo>();
 	private LinkedBlockingDeque<Dibujo> capaFx = new LinkedBlockingDeque<Dibujo>();
 	private LinkedBlockingDeque<Dibujo> capaGui = new LinkedBlockingDeque<Dibujo>();
-	private LinkedBlockingDeque[] capas = { capaFondo, capaDisparosAmigos, capaNave, capaMeteoritos, capaFx, capaGui };
-	private LinkedBlockingDeque[] capasLimpieza = { capaDisparosAmigos, capaNave, capaMeteoritos, capaFx, capaGui };
+	private LinkedBlockingDeque[] capas = { capaFondo, capaDisparosAmigos, capaNave, capaMeteoritos, capaPremios, capaFx, capaGui };
+	private LinkedBlockingDeque[] capasLimpieza = { capaDisparosAmigos, capaNave, capaMeteoritos, capaPremios, capaFx, capaGui };
 
 	private Escena escenaActual;
 
@@ -60,6 +64,8 @@ public class Motor extends Thread {
 		for (LinkedBlockingDeque capa : capas) {
 			lienzo.addCapa(capa);
 		}
+		//poner fondo
+		agregarCapaFondo(new Fondo());
 	}
 
 	public synchronized void play() {
@@ -114,6 +120,8 @@ public class Motor extends Thread {
 			// detectar colisiones favorables
 			colisionesFavorables();
 			// detectar colisiones desfavorables
+			colisionesDesfavorables();
+
 			// Actualizar parametro GUI
 
 			// pintar
@@ -136,23 +144,51 @@ public class Motor extends Thread {
 	/**
 	 * 
 	 */
-	private void colisionesFavorables() {
+	private void colisionesDesfavorables() {
+		if (!(escenaActual instanceof Partida))
+			return;
+		Nave nave =  ((Partida) escenaActual).getNave();
+		if (!nave.isVivo())
+			return;
+		
 		ExecutorService threadpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		// recorrer disparos y para cada disparo:
-		for (Disparo disp : capaDisparosAmigos) {
-			// recorrer meteoritos y comprobar impactos de disparos
-			for (Dibujo meteo : capaMeteoritos) {
-				threadpool.execute(() -> {
-					if (((Disparable) meteo).impacto(disp.getX(), disp.getY(), disp.getFuerza()))
-						disp.setVivo(false);
-				});
-			}
-
+		// recorrer meteoritos:
+		for (Dibujo meteo : capaMeteoritos) {
+			if (nave.isVivo())
+			threadpool.execute(() -> ((Meteorito) meteo).colisiona(nave));
 		}
-
 		threadpool.shutdown();
 		while (!threadpool.isTerminated())
 			;
+	}
+
+	/**
+	 * 
+	 */
+	private void colisionesFavorables() {
+		ExecutorService threadpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		// recorrer objetivos y para cada disparo:
+		for (Disparo disp : capaDisparosAmigos) {
+			// recorrer  comprobar impactos de disparos
+			for (Dibujo meteo : capaMeteoritos) {
+				if (disp.isVivo())
+					threadpool.execute(() -> {
+						if (disp.isVivo()&&((Disparable) meteo).impactoDisparo(disp))
+							disp.impactado();
+					});
+			}
+		}
+		
+		//recorrer colisiones con premios
+		// recorrer meteoritos:
+		if ((escenaActual instanceof Partida)) {
+			Nave nave =  ((Partida) escenaActual).getNave();
+			for (Dibujo premio: capaPremios) {
+				if (nave.isVivo())
+				threadpool.execute(() -> ((Premio) premio).colisiona(nave));
+			}
+		}
+		threadpool.close();
 	}
 
 	/**
@@ -214,6 +250,15 @@ public class Motor extends Thread {
 	 */
 	public void agregarCapaMeteoritos(Dibujo dibujo) {
 		capaMeteoritos.add(dibujo);
+
+	}
+
+
+	/**
+	 * @param explosionMeteorito
+	 */
+	public void agregarCapaPremios(Dibujo dibujo) {
+		capaPremios.add(dibujo);
 
 	}
 
