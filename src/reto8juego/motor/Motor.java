@@ -8,6 +8,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicLong;
 
+import reto8juego.actores.DisparoEnemigo;
+import reto8juego.actores.Enemigo;
 import reto8juego.actores.Fondo;
 import reto8juego.actores.Meteorito;
 import reto8juego.actores.Nave;
@@ -36,13 +38,15 @@ public class Motor extends Thread {
 	// capas
 	private LinkedBlockingDeque<Dibujo> capaFondo = new LinkedBlockingDeque<Dibujo>();
 	private LinkedBlockingDeque<Disparo> capaDisparosAmigos = new LinkedBlockingDeque<Disparo>();
+	private LinkedBlockingDeque<Disparo> capaDisparosEnemigos = new LinkedBlockingDeque<Disparo>();
 	private LinkedBlockingDeque<Dibujo> capaNave = new LinkedBlockingDeque<Dibujo>();
 	private LinkedBlockingDeque<Dibujo> capaMeteoritos = new LinkedBlockingDeque<Dibujo>();
+	private LinkedBlockingDeque<Dibujo> capaEnemigos = new LinkedBlockingDeque<Dibujo>();
 	private LinkedBlockingDeque<Dibujo> capaPremios= new LinkedBlockingDeque<Dibujo>();
 	private LinkedBlockingDeque<Dibujo> capaFx = new LinkedBlockingDeque<Dibujo>();
 	private LinkedBlockingDeque<Dibujo> capaGui = new LinkedBlockingDeque<Dibujo>();
-	private LinkedBlockingDeque[] capas = { capaFondo, capaDisparosAmigos, capaNave, capaMeteoritos, capaPremios, capaFx, capaGui };
-	private LinkedBlockingDeque[] capasLimpieza = { capaDisparosAmigos, capaNave, capaMeteoritos, capaPremios, capaFx, capaGui };
+	private LinkedBlockingDeque[] capas = { capaFondo, capaDisparosAmigos, capaDisparosEnemigos, capaNave, capaMeteoritos, capaEnemigos, capaPremios, capaFx, capaGui };
+	private LinkedBlockingDeque[] capasLimpieza = { capaDisparosAmigos, capaDisparosEnemigos, capaNave, capaMeteoritos, capaEnemigos, capaPremios, capaFx, capaGui };
 
 	private Escena escenaActual;
 
@@ -122,8 +126,6 @@ public class Motor extends Thread {
 			// detectar colisiones desfavorables
 			colisionesDesfavorables();
 
-			// Actualizar parametro GUI
-
 			// pintar
 			if (lienzo != null)
 				lienzo.repaint();
@@ -152,14 +154,30 @@ public class Motor extends Thread {
 			return;
 		
 		ExecutorService threadpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		// recorrer meteoritos:
+		// colisiones meteoritos:
 		for (Dibujo meteo : capaMeteoritos) {
 			if (nave.isVivo())
 			threadpool.execute(() -> ((Meteorito) meteo).colisiona(nave));
 		}
-		threadpool.shutdown();
-		while (!threadpool.isTerminated())
-			;
+		
+		// colisiones enemigos:
+			for (Dibujo enemigo : capaEnemigos) {
+				if (nave.isVivo())
+				threadpool.execute(() -> ((Enemigo) enemigo).colisiona(nave));
+			}
+	 
+		//disparos enemigos:
+			for (Disparo disp : capaDisparosEnemigos) {
+				// recorrer  comprobar cada disparo enemigo con la nave
+					if (nave.isVivo())
+						threadpool.execute(() -> {
+							if (disp.isVivo()&&((Disparable) nave).impactoDisparo(disp))
+								disp.impactado();
+						});
+			}
+		
+		
+		threadpool.close();
 	}
 
 	/**
@@ -167,13 +185,22 @@ public class Motor extends Thread {
 	 */
 	private void colisionesFavorables() {
 		ExecutorService threadpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		// recorrer objetivos y para cada disparo:
+		// recorrer objetivos para cada disparo:
 		for (Disparo disp : capaDisparosAmigos) {
-			// recorrer  comprobar impactos de disparos
+			// recorrer  comprobar meteoritos
 			for (Dibujo meteo : capaMeteoritos) {
 				if (disp.isVivo())
 					threadpool.execute(() -> {
 						if (disp.isVivo()&&((Disparable) meteo).impactoDisparo(disp))
+							disp.impactado();
+					});
+			}
+			
+			// recorrer  comprobar enemigos 
+			for (Dibujo enemigo: capaEnemigos) {
+				if (disp.isVivo())
+					threadpool.execute(() -> {
+						if (disp.isVivo()&&((Disparable) enemigo).impactoDisparo(disp))
 							disp.impactado();
 					});
 			}
@@ -204,9 +231,7 @@ public class Motor extends Thread {
 				}
 			});
 		}
-		threadpool.shutdown();
-		while (!threadpool.isTerminated())
-			;
+		threadpool.close();
 
 	}
 
@@ -221,9 +246,7 @@ public class Motor extends Thread {
 			}
 
 		}
-		threadpool.shutdown();
-		while (!threadpool.isTerminated())
-			;
+		threadpool.close();
 	}
 
 	/**
@@ -241,8 +264,8 @@ public class Motor extends Thread {
 		capaGui.add(dibujo);
 	}
 
-	public void agregarCapaDisparosAmigos(Dibujo dibujo) {
-		capaDisparosAmigos.add((Disparo) dibujo);
+	public void agregarCapaDisparosAmigos(Disparo disparo) {
+		capaDisparosAmigos.add(disparo);
 	}
 
 	/**
@@ -270,6 +293,22 @@ public class Motor extends Thread {
 
 	}
 
+	/**
+	 * @param enemigo
+	 */
+	public void agregarCapaEnemigos(Enemigo enemigo) {
+		capaEnemigos.add(enemigo);
+		
+	}
+	
+	/**
+	 * @param disparoEnemigo
+	 */
+	public void agregarCapaDisparosEnemigos(Disparo disparo) {
+		capaDisparosEnemigos.add(disparo);
+	}
+	
+	
 	/**
 	 * 
 	 */
@@ -310,4 +349,7 @@ public class Motor extends Thread {
 		return tiempo.get();
 	}
 
-}
+	
+	}
+
+ 

@@ -61,7 +61,7 @@ public class VisorPuntos extends Dibujo {
 		int altot = metrics.getHeight();
 
 		g2d.setColor(Colores.CARA_TEXTO);
-		g2d.drawString(texto, (int) (Config.CENTRO_ANCHO - (anchot / 2)), (int) (y+altot));
+		g2d.drawString(texto, (int) (Config.CENTRO_ANCHO - (anchot / 2)), (int) (y+32));
  		
  		
 	}

@@ -12,7 +12,6 @@ import reto8juego.config.Colores;
 import reto8juego.config.Config;
 import reto8juego.motor.AnimacionFrenada;
 import reto8juego.motor.Dibujo;
-import reto8juego.motor.Funcion;
 import reto8juego.recursos.Recursos;
 import reto8juego.recursos.Strings;
 
@@ -23,13 +22,11 @@ import reto8juego.recursos.Strings;
 public class TituloJuego extends Dibujo {
 	String texto;
 	Font fuente;
-	long inicio;
-	int duracion = 0;
 
 	public TituloJuego() {
 		super((double) Config.CENTRO_ANCHO, (double) Config.ALTURA_TITULO);
 		this.texto = Strings.TITULO_JUEGO;
-		fuente = Recursos.getInstancia().getFuente("COMPUTERRobot").deriveFont(Config.T_LETRA_0);
+		fuente = Recursos.getInstancia().getFuente("COMPUTERRobot").deriveFont(Config.T_LETRA_TITULO);
 		
 		//animar opacidad a la entrada
 		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 0, 254, () -> animacionOpacidad = null);
@@ -37,10 +34,8 @@ public class TituloJuego extends Dibujo {
 	}
 
 	public void animacionSalida() {
-		//animar opacidad y vertical en la salida
+		//animar opacidad en la salida
 		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 254, 0, null);
-		animacionY = new AnimacionFrenada(Config.DURACION_TRANSICION, Config.ALTURA_TITULO, Config.ALTURA_TITULO+ 100,
-				null);
 	}
 
 	@Override

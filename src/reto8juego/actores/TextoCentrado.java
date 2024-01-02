@@ -35,7 +35,7 @@ public class TextoCentrado extends Dibujo {
 		super((double) Config.CENTRO_ANCHO, (double) Config.CENTRO_ALTO);
 		this.texto = texto;
 		this.duracion = duracion;
-		opacidad = 254;
+		opacidad =0;
 		fuente = Recursos.getInstancia().getFuente("plasmati").deriveFont(Config.T_LETRA_1);
 		this.funcionSalida = funcionSalida;
 		tiempoInicio = motor.getTiempo();

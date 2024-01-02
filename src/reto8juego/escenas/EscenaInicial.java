@@ -6,7 +6,7 @@ package reto8juego.escenas;
 import java.awt.event.KeyEvent;
 
 import reto8juego.Controlador;
-import reto8juego.actores.Fondo;
+import reto8juego.actores.Menu;
 import reto8juego.actores.TextoCentrado;
 import reto8juego.actores.TituloJuego;
 import reto8juego.motor.Escena;
@@ -17,11 +17,10 @@ import reto8juego.recursos.Strings;
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public class Inicio extends Escena{
+public class EscenaInicial extends Escena{
 	
-	TextoCentrado textoCentrado;
 	TituloJuego textoTitulo;
-	
+	Menu menu;
 	/**
 	 * Define si la escena responde al teclado
 	 */
@@ -31,7 +30,7 @@ public class Inicio extends Escena{
 	 * @param control
 	 * @param callbackTerminado 
 	 */
-	public Inicio(Controlador control, Funcion callbackTerminado) {
+	public EscenaInicial(Controlador control, Funcion callbackTerminado) {
 		super(control, callbackTerminado);
 		iniciar();
  	}
@@ -39,10 +38,10 @@ public class Inicio extends Escena{
 	@Override
 	public void iniciar() {
 		motor.vaciarCapas();
-		textoCentrado = new TextoCentrado(Strings.TEXTO_INICIA_PARTIDA,true,0,() -> terminar());
-		motor.agregarCapaGui(textoCentrado);
 		textoTitulo= new TituloJuego();
 		motor.agregarCapaGui(textoTitulo);
+		menu = new Menu(control);
+		motor.agregarCapaGui(menu);
 		motor.play();
 	}
 
@@ -61,11 +60,14 @@ public class Inicio extends Escena{
 		if (!controlActivo)
 			return;
 		int kc=e.getKeyCode();
-		if (kc==e.VK_SPACE) {
+		if (kc==e.VK_ENTER||kc==e.VK_SPACE) {
 			controlActivo=false;
-			textoCentrado.animacionSalida();
+			menu.animacionSalida();
 			textoTitulo.animacionSalida();
-		}
+		}else if (kc==e.VK_UP)
+			menu.subirOpcionSeleccionada();
+		else if (kc==e.VK_DOWN)
+			menu.bajarOpcionSeleccionada();
 	}
 
 	@Override

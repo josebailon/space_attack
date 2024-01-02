@@ -31,14 +31,13 @@ public class GeneradorMeteoritos extends Thread{
 
 	@Override
 	public void run() {
-		calculaTiempoProximaGeneracion();
 		while (vivo) {
-			ahora=motor.getTiempo();
-			nivel = partida.getNivel();
-			if (proximo<ahora) {
-				generarMeterorito();
-				calculaTiempoProximaGeneracion();
+			try {
+				sleep(Config.INTERVALO_METEORITOS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
+			generarMeterorito();
 		}
 		
 	}
@@ -65,20 +64,7 @@ public class GeneradorMeteoritos extends Thread{
 	}
 
 
-	/**
-	 * 
-	 */
-	private void calculaTiempoProximaGeneracion() {
-		ahora=motor.getTiempo();
- 		int espera = Config.INTERVALO_METEORITOS/nivel;
- 		proximo=ahora+espera;
-		try {
-			sleep(500);
-		} catch (InterruptedException e) {
-			vivo=false;
-		}
- 	}
-
+ 
 
 	public void terminar() {
 		vivo=false;

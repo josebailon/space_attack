@@ -6,19 +6,21 @@ package reto8juego.actores;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import reto8juego.config.Config;
 import reto8juego.escenas.Partida;
 import reto8juego.motor.Colisionable;
 import reto8juego.motor.Dibujo;
+import reto8juego.motor.Disparable;
+import reto8juego.motor.Disparo;
 import reto8juego.recursos.Recursos;
 
 /**
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public class Nave extends Dibujo implements Colisionable{
+public class Nave extends Dibujo implements Colisionable, Disparable{
 	final int FOTOGRAMA_CENTRO=7;
 	final int FOTOGRAMA_IZQUIERDA=0;
 	final int FOTOGRAMA_DERECHA=14;
@@ -33,7 +35,7 @@ public class Nave extends Dibujo implements Colisionable{
 	AtomicInteger fotogramaDestino=new AtomicInteger(FOTOGRAMA_CENTRO);
 	AtomicInteger fotogramaActual=new AtomicInteger(FOTOGRAMA_CENTRO);
 	int fuerzaDisparo=1;
-	AtomicInteger salud = new AtomicInteger(100);
+	AtomicInteger salud = new AtomicInteger(Config.SALUD_MAXIMA);
 	AtomicInteger nivelEscudo=new AtomicInteger(1);
 	
 	
@@ -178,8 +180,35 @@ public class Nave extends Dibujo implements Colisionable{
 	 * @param i
 	 */
 	public void agregarSalud(int i) {
-			if (salud.addAndGet(i)>100)
-				salud.set(100);
+			if (salud.addAndGet(i)>Config.SALUD_MAXIMA)
+				salud.set(Config.SALUD_MAXIMA);
+	}
+
+	public void aumentarFuerzaDisparo() {
+		fuerzaDisparo++;
+	}
+	
+	@Override
+	public boolean impactoDisparo(Disparo disparo) {
+		boolean impactado = false;
+		//componentes de vector de posicion relativa
+		double xt=Math.abs(disparo.getX())-x;
+		double yt=Math.abs(disparo.getY())-y;
+		//comprobacion de que el disparo esta en la caja contenedora
+		if (xt>mitadAlto||yt>mitadAlto)
+			return false;
+		
+		//comprobacion por distancia
+		double distancia = Math.sqrt(xt*xt+yt*yt);
+		
+		//calcular efectos de impacto
+		if (distancia<mitadAlto) {
+			golpear(disparo.getFuerza());
+			impactado=true;
+		}
+
+		//resultado del impacto
+		 return impactado;
 	}
 
 }

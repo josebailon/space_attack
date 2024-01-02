@@ -13,77 +13,50 @@ import reto8juego.motor.Motor;
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public class GeneradorEnemigos extends Thread{
-	Random r=new Random();
-	boolean vivo=true;
+public class GeneradorEnemigos extends Thread {
+	Random r = new Random();
 	Partida partida;
+	int x;
+	int mov;
 	int tipo;
-	int nivel=1;
+	int cantidad;
+	int frecuencia;
+	int nivel;
 	Motor motor;
-	int cantidad=0;
-	long ahora;
-	long proximo=0;
-	public GeneradorEnemigos(Partida partida,int tipo, int nivel, int cantidad, int x, int y) {
-		this.partida = partida;
-		motor=Motor.getInstancia();
-		ahora=motor.getTiempo();
-		
-	}
 
+	/**
+	 * 
+	 * @param partida
+	 * @param x
+	 * @param mov
+	 * @param tipo
+	 * @param cantidad
+	 * @param frecuencia
+	 * @param nivel
+	 */
+	public GeneradorEnemigos(Partida partida, int x, int mov, int tipo, int cantidad, int frecuencia, int nivel) {
+		this.partida = partida;
+		this.x = x;
+		this.mov = mov;
+		this.tipo = tipo;
+		this.cantidad = cantidad;
+		this.frecuencia = frecuencia;
+		this.nivel = nivel;
+		motor = Motor.getInstancia();
+	}
 
 	@Override
 	public void run() {
-		calculaTiempoProximaGeneracion();
-		while (vivo) {
-			ahora=motor.getTiempo();
-			nivel = partida.getNivel();
-			if (proximo<ahora) {
-				generarMeterorito();
-				calculaTiempoProximaGeneracion();
+		for (int i = 0; i < cantidad; i++) {
+			Enemigo enemigo = new Enemigo(partida,x, mov, tipo, nivel);
+			motor.agregarCapaEnemigos(enemigo);
+			try {
+				sleep(frecuencia);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
-		
-	}
-	
-	
-	/**
-	 * 
-	 */
-	private void generarMeterorito() {
-		
-		//calcular origen  y vector velocidad normalizado
-		double xOrigen = r.nextDouble(0,motor.getAncho());
-		double xDestino= r.nextDouble(0,motor.getAncho());
-		double desfaseX=xDestino-xOrigen;
-		double desfaseY=motor.getAlto()-100;
-		double longitud =  Math.sqrt(desfaseX * desfaseX + desfaseY * desfaseY);
-
-		// normalizar vector de velocidad
-		double velX=desfaseX/longitud;
-		double velY=desfaseY/longitud;
-
-			Meteorito m = new Meteorito(xOrigen,-100,velX,velY,nivel);
-			motor.agregarCapaMeteoritos(m);
-	}
-
-
-	/**
-	 * 
-	 */
-	private void calculaTiempoProximaGeneracion() {
-		ahora=motor.getTiempo();
- 		int espera = Config.INTERVALO_METEORITOS/nivel;
- 		proximo=ahora+espera;
-		try {
-			sleep(500);
-		} catch (InterruptedException e) {
-			vivo=false;
-		}
- 	}
-
-
-	public void terminar() {
-		vivo=false;
 	}
 
 }

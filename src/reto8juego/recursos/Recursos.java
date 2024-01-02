@@ -18,6 +18,12 @@ public class Recursos {
 	private HashMap<String, BufferedImage> imagenes=new HashMap();
 	private HashMap<String, Font> fuentes=new HashMap();
 	private String[]listaImg= {
+			"menu0",
+			"menu1",
+			"menu2",
+			"menu3",
+			"menu4",
+			"menu5",
 			"fondo0",
 			"fondo1",
 			"fondo2",
@@ -38,7 +44,12 @@ public class Recursos {
 			"nave13",
 			"nave14",
 			"escudo",
-			"disparoAmigo",
+			"disparoAmigo0",
+			"disparoAmigo1",
+			"disparoAmigo2",
+			"disparoAmigo3",
+			"disparoAmigo4",
+			"disparoAmigo5",
 			"meteorito0",
 			"meteorito1",
 			"meteorito2",
@@ -84,6 +95,16 @@ public class Recursos {
 			"salud3",
 			"salud4",
 			"salud5",
+			"arma0",
+			"arma1",
+			"arma2",
+			"arma3",
+			"arma4",
+			"arma5",
+			"enemigo0",
+			"enemigo1",
+			"enemigo2",
+			"disparoEnemigo",
 			
 			};
 	private String[]listaFuentes= {"CHECKBK0","COMPUTERRobot","plasmati"};
@@ -126,6 +147,7 @@ public class Recursos {
 	private boolean cargarImg() {
 		for (String nombre : listaImg) {
 			try {
+				System.out.println(nombre);
 				BufferedImage img =ImageIO.read(Recursos.class.getResourceAsStream("img/"+nombre+".png"));
 
 				//BufferedImage img =ImageIO.read(getClass().getResource(nombre+".png"));

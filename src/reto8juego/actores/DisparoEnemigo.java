@@ -10,7 +10,7 @@ import reto8juego.recursos.Recursos;
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public class DisparoAmigo extends Disparo {
+public class DisparoEnemigo extends Disparo {
 
 	/**
 	 * 
@@ -18,8 +18,8 @@ public class DisparoAmigo extends Disparo {
 	 * @param y
 	 * @param fuerza
 	 */
-	public DisparoAmigo(double x, double y,int fuerza) {		
-		super(Recursos.getInstancia().getImg("disparoAmigo"+((fuerza-1)%6)), x, y, 0, -1000d, fuerza);
+	public DisparoEnemigo(double x, double y,double vX,double vY,int fuerza) {
+		super(Recursos.getInstancia().getImg("disparoEnemigo"), x, y, vX, vY, fuerza);
 	}
 
 }

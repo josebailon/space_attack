@@ -15,14 +15,17 @@ abstract public class Escena {
 	
 	
 	protected Controlador control;
-	protected Funcion callbackTerminado;
 	protected Motor motor;
+	protected Funcion callbackTerminado;
 	public Escena(Controlador control,Funcion callbackTerminado) {
 		this.control = control;
 		this.callbackTerminado=callbackTerminado;
 		this.motor=Motor.getInstancia();
 	}
 	
+	public void setCallback(Funcion callback) {
+		callbackTerminado=callback;
+	}
 	abstract public void iniciar();
 	abstract public void terminar();
  	abstract public void keyPressed(KeyEvent e);

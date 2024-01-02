@@ -6,16 +6,13 @@ package reto8juego;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import reto8juego.actores.Fondo;
-import reto8juego.actores.Nave;
 import reto8juego.actores.TextoCentrado;
-import reto8juego.escenas.Inicio;
+import reto8juego.escenas.EscenaInicial;
+import reto8juego.escenas.Instrucciones;
 import reto8juego.escenas.Partida;
 import reto8juego.gui.Ventana;
-import reto8juego.motor.Escena;
 import reto8juego.motor.Motor;
 import reto8juego.recursos.Recursos;
-import reto8juego.recursos.Strings;
 
 /**
  * 
@@ -48,45 +45,47 @@ public class Controlador implements KeyListener {
 	 * 
 	 */
 	public void pantallaInicial() {
-		estado=INICIO;
-		motor.setEscena(new Inicio(this,() -> iniciarPartida()));
+		motor.setEscena(new EscenaInicial(this,() -> iniciarPartida()));
 	}
-
  
 	/**
 	 * 
 	 */
-	private void iniciarPartida() {
-		estado=JUGANDO;
-		motor.setEscena(new Partida(this,null));
+	public void iniciarPartida() {
+		motor.setEscena(new Partida(this,()->pantallaInicial()));
 	}
 
-
-
-
-
+	
 
 	@Override
 	public void keyPressed(KeyEvent e) {
 		motor.getEscena().keyPressed(e);
-		
 	}
-
-
-
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		motor.getEscena().keyReleased(e);
 	}
 	
-
-
-
-
 	@Override
 	public void keyTyped(KeyEvent e) {
 		motor.getEscena().keyTyped(e);
+	}
+
+
+	/**
+	 * @return
+	 */
+	public void salir() {
+		System.exit(0);
+	}
+
+
+	/**
+	 * @return
+	 */
+	public void verInstrucciones() {
+		motor.setEscena(new Instrucciones(this,()->pantallaInicial()));
 	}
 
 }

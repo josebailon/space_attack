@@ -41,7 +41,7 @@ public class Meteorito extends Dibujo implements Disparable, Colisionable{
 		this.vX=vx;
 		this.vY=vy;
 		this.nivel=nivel;
-		this.salud.set(nivel);
+		this.salud.set(nivel%5);
 		this.fuerza=10+this.nivel;
 		this.radio=mitadAlto;
 	}
@@ -61,9 +61,9 @@ public class Meteorito extends Dibujo implements Disparable, Colisionable{
 	public void nuevoFotograma(int frame, long delta, float deltaSegundo) {
 		x+=deltaSegundo*vX*nivel*100;
 		y+=deltaSegundo*vY*nivel*100;
-		if (x<-100||x>motor.getAncho()+100||y>motor.getAlto()+100)
-			this.vivo=false;
 		angulo+=deltaSegundo*vAngulo;
+		if (y>motor.getAlto()+100)
+			this.vivo=false;
 	}
 
 	@Override
@@ -131,20 +131,28 @@ public class Meteorito extends Dibujo implements Disparable, Colisionable{
 		//generar explosion y morir
 		motor.agregarCapaFx(new Explosion(x, y, Explosion.METEORITO));
 		vivo=false;
-		Premio premio;
-		int azar=r.nextInt(100);
- 		if (azar>30)
-			premio =  new PremioPuntos(x, y,nivel);
-		else
-			premio = new PremioSalud(x, y);
-//		else if (azar>15)
-//		else if (azar>50)
-//			premio = new PremioEscudo(x, y);
-//		else
-//			premio =  new PremioVida(x, y);
-		motor.agregarCapaPremios(premio);
+		crearPremio();
 	}
 
+
+	/**
+	 * 
+	 */
+	private void crearPremio() {
+		Premio premio;
+		int azar=r.nextInt(1000);
+ 		if (azar>400)
+			premio =  new PremioPuntos(x, y,nivel);
+		else if (azar>150)
+			premio = new PremioSalud(x, y);
+		else if (azar>70)
+			premio = new PremioEscudo(x, y);
+		else if (azar>10)
+			premio = new PremioArma(x, y);
+		else
+			premio =  new PremioVida(x, y);
+		motor.agregarCapaPremios(premio);
+	}
 
 	@Override
 	public void golpear(int fuerza) {

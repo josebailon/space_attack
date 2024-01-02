@@ -6,12 +6,15 @@ package reto8juego.escenas;
 import java.awt.event.KeyEvent;
 
 import reto8juego.Controlador;
+import reto8juego.actores.GeneradorEnemigos;
 import reto8juego.actores.GeneradorMeteoritos;
 import reto8juego.actores.Nave;
 import reto8juego.actores.TextoCentrado;
 import reto8juego.actores.TextoPausa;
 import reto8juego.actores.VisorPuntos;
-import reto8juego.actores.VisorSalud;
+import reto8juego.actores.VisorSaludNivel;
+import reto8juego.config.Config;
+import reto8juego.config.Niveles;
 import reto8juego.motor.AnimacionFrenada;
 import reto8juego.motor.Escena;
 import reto8juego.motor.Funcion;
@@ -26,7 +29,7 @@ public class Partida extends Escena {
 	TextoPausa textoPausa;
  	int puntos = 0;
 	private Nave nave;
-	private int vidas=3;
+	private int vidas=Config.VIDAS_INICIALES;
 	/**
 	 * La partida responde o no al teclado
 	 */
@@ -37,7 +40,11 @@ public class Partida extends Escena {
 	boolean izquierda = false;
 	boolean derecha = false;
 	GeneradorMeteoritos generadorMeteoritos;
-	int oleadasRestantes=1;
+	int siguienteOleada;
+	int[][] oleadasNivel;
+	GeneradorEnemigos generadorEnemigos;
+	
+	boolean terminada =false;
 	/**
 	 * @param control
 	 * @param callbackTerminado
@@ -51,11 +58,33 @@ public class Partida extends Escena {
 	 * 
 	 */
 	private void iniciarNivel() {
-		generadorMeteoritos = new GeneradorMeteoritos(this);
-		generadorMeteoritos.start();
-		new Temporizador(3, ()->siguienteOleada());
+		if (terminada)
+			return;
+		oleadasNivel=Niveles.getNivel(nivel-1);
+		if (oleadasNivel==null) {
+			ganarPartida();
+			return;
+		}
+		motor.agregarCapaGui(new TextoCentrado(Strings.NIVEL+" "+nivel, true, 2000,null));
+		siguienteOleada=0;
+		siguienteOleada();
+
 	}
 
+	/**
+	 * 
+	 */
+	private void ganarPartida() {
+		motor.agregarCapaGui(new TextoCentrado(Strings.MENSAJE_GANAR, true, 2000,null));
+		terminar();
+	}
+
+	private void perderPartida() {
+		System.out.println("PERDER PARTIDA");
+		motor.agregarCapaGui(new TextoCentrado(Strings.MENSAJE_PERDER, true, 2000,null));
+		terminar();
+	}
+	
 	@Override
 	public void iniciar() {
 		motor.vaciarCapas();
@@ -63,18 +92,49 @@ public class Partida extends Escena {
 		nivel = 1;
 		
 		addNave();
-		motor.agregarCapaGui(new TextoCentrado(Strings.NIVEL+" "+nivel, true, 2000,null));
-		iniciarNivel();
 		addGUI();
+		iniciarNivel();
+		generadorMeteoritos = new GeneradorMeteoritos(this);
+		generadorMeteoritos.start();
 	
 	}
 
 	/**
 	 * @return
 	 */
-	private Object siguienteOleada() {
-		// TODO Auto-generated method stub
-		return null;
+	private void siguienteOleada() {
+		if (terminada)
+			return;
+		if (oleadasNivel!=null &&siguienteOleada==oleadasNivel.length) {
+			nivel++;
+			new Temporizador(5000, ()-> iniciarNivel());
+			return;
+		}
+			
+		int[]  oleada = oleadasNivel[siguienteOleada];
+		siguienteOleada++;
+		//tiempo, MOV, tipo enemigo, cantidad, frecuencia
+		int tiempo=oleada[0];
+		int x = oleada[1];
+		int mov=oleada[2];
+		int tipoEnem=oleada[3];
+		int cantidad=oleada[4];
+		int frecuencia=oleada[5];
+		new Temporizador(tiempo, ()->crearOleada(x, mov,tipoEnem,cantidad,frecuencia));
+	}
+
+	/**
+	 * @param mov
+	 * @param tipoEnem
+	 * @param cantidad
+	 * @param frecuencia
+	 * @return
+	 */
+	private void crearOleada(int x, int mov, int tipoEnem, int cantidad, int frecuencia) {
+		
+		generadorEnemigos=new  GeneradorEnemigos(this, x, mov, tipoEnem, cantidad, frecuencia, nivel);
+		generadorEnemigos.start();
+		siguienteOleada();
 	}
 
 	private void resetControl() {
@@ -103,16 +163,17 @@ public class Partida extends Escena {
 	 * 
 	 */
 	private void addGUI() {
-		motor.agregarCapaGui(new VisorSalud(this));
+		motor.agregarCapaGui(new VisorSaludNivel(this));
 		motor.agregarCapaGui(new VisorPuntos(this));
 		
 	}
 
 	@Override
 	public void terminar() {
+		controlActivo=false;
+		terminada=true;
 		generadorMeteoritos.terminar();
-		motor.agregarCapaGui(new TextoCentrado(Strings.GAME_OVER, true, 2000,()->control.pantallaInicial()));
-
+		new Temporizador(5000, ()->callbackTerminado.apply());
 	}
 
 	@Override
@@ -163,7 +224,6 @@ public class Partida extends Escena {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -184,7 +244,7 @@ public class Partida extends Escena {
 			addNave();
 		}
 		else {
-			terminar();
+			perderPartida();
 		}
 		
 	}
@@ -218,6 +278,7 @@ public class Partida extends Escena {
 		vidas++;
 		
 	}
+ 
 
 	
 }
