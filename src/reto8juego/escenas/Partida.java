@@ -75,7 +75,9 @@ public class Partida extends Escena {
 	 * 
 	 */
 	private void ganarPartida() {
-		motor.agregarCapaGui(new TextoCentrado(Strings.MENSAJE_GANAR, true, 2000,null));
+		nave.setEscudoActivo(true);
+		nave.setAnimacionY(new AnimacionFrenada(2000, (float)nave.getY(), -100, null));
+		motor.agregarCapaGui(new TextoCentrado(Strings.MENSAJE_GANAR, true, 3000,null));
 		terminar();
 	}
 
@@ -173,7 +175,7 @@ public class Partida extends Escena {
 		controlActivo=false;
 		terminada=true;
 		generadorMeteoritos.terminar();
-		new Temporizador(5000, ()->callbackTerminado.apply());
+		new Temporizador(6000, ()->callbackTerminado.apply());
 	}
 
 	@Override

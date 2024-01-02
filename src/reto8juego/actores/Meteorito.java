@@ -141,13 +141,13 @@ public class Meteorito extends Dibujo implements Disparable, Colisionable{
 	private void crearPremio() {
 		Premio premio;
 		int azar=r.nextInt(1000);
- 		if (azar>400)
+ 		if (azar>500)
 			premio =  new PremioPuntos(x, y,nivel);
-		else if (azar>150)
+		else if (azar>200)
 			premio = new PremioSalud(x, y);
-		else if (azar>70)
+		else if (azar>80)
 			premio = new PremioEscudo(x, y);
-		else if (azar>10)
+		else if (azar>30)
 			premio = new PremioArma(x, y);
 		else
 			premio =  new PremioVida(x, y);

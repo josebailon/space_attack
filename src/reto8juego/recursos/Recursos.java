@@ -105,7 +105,9 @@ public class Recursos {
 			"enemigo1",
 			"enemigo2",
 			"disparoEnemigo",
-			
+			"cursores",
+			"ins_peligro",
+			"ins_asteorides"			
 			};
 	private String[]listaFuentes= {"CHECKBK0","COMPUTERRobot","plasmati"};
 	
@@ -132,8 +134,6 @@ public class Recursos {
 		for (String nombre : listaFuentes) {
 			try {
 				Font fuente =Font.createFont(Font.TRUETYPE_FONT,Recursos.class.getResourceAsStream("fuentes/"+nombre+".ttf"));
-
-//				Font fuente =Font.createFont(Font.TRUETYPE_FONT,getClass().getResource(nombre+".ttf").openStream());
 				fuentes.put(nombre, fuente);
 			} catch (IOException e) {
 				return false;
@@ -147,12 +147,11 @@ public class Recursos {
 	private boolean cargarImg() {
 		for (String nombre : listaImg) {
 			try {
-				System.out.println(nombre);
 				BufferedImage img =ImageIO.read(Recursos.class.getResourceAsStream("img/"+nombre+".png"));
 
-				//BufferedImage img =ImageIO.read(getClass().getResource(nombre+".png"));
 				imagenes.put(nombre, img);
 			} catch (IOException e) {
+				System.out.println("Problema cargando la imagen "+nombre+".png");
 				return false;
 			}			
 		}
