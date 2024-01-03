@@ -11,12 +11,27 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 /**
+ * Se encarga de cargar de disco los archivos de recuros (imagenes y fuentes)
+ * y servirlos a quien lo solicite. Guarda los elementos cargados en un hashmap con key string
+ * 
  * 
  * @author Jose Javier Bailon Ortiz
  */
 public class Recursos {
+	
+	/**
+	 * Imagenes cargadas
+	 */
 	private HashMap<String, BufferedImage> imagenes=new HashMap();
+	
+	/**
+	 * Fuentes cargadas
+	 */
 	private HashMap<String, Font> fuentes=new HashMap();
+	
+	/**
+	 * Lista de imagenes a cargar
+	 */
 	private String[]listaImg= {
 			"menu0",
 			"menu1",
@@ -109,13 +124,28 @@ public class Recursos {
 			"ins_peligro",
 			"ins_asteorides"			
 			};
-	private String[]listaFuentes= {"CHECKBK0","COMPUTERRobot","plasmati"};
+	
+	/**
+	 * Lista de fuentes a cargar
+	 */
+	private String[]listaFuentes= {"COMPUTERRobot","plasmati"};
 	
 	
+	/**
+	 * Instancia singleton
+	 */
 	private static Recursos instancia;
 	
+	/**
+	 * Constructor privado para singleton
+	 */
 	private Recursos() {}
 	
+	/**
+	 * Devuelve una instancia singleton creandola si no existe
+	 * 
+	 * @return La instancia singleton
+	 */
 	public static Recursos getInstancia(){
 		if (instancia==null) {
 			instancia =new Recursos();
@@ -123,34 +153,54 @@ public class Recursos {
 		return instancia;
 	}
 	
+	/**
+	 * Carga los recursos
+	 * 
+	 * @return True si se han cargado todos, False si no se han cargado
+	 */
 	public boolean cargarRecursos() {
 		return cargarImg() && cargarFuentes();
 	}
 	
 	/**
-	 * @return
+	 * Carga las fuentes
+	 * 
+	 * @return True si se han cargado todas False si no se han cargado todas
 	 */
 	private boolean cargarFuentes() {
+		
+		//recorrer lista de fuentes
 		for (String nombre : listaFuentes) {
 			try {
+				//cargar la fuente
 				Font fuente =Font.createFont(Font.TRUETYPE_FONT,Recursos.class.getResourceAsStream("fuentes/"+nombre+".ttf"));
 				fuentes.put(nombre, fuente);
 			} catch (IOException e) {
+				System.out.println("Problema cargando la fuente"+nombre+".ttf");
 				return false;
 			} catch (FontFormatException e) {
+				System.out.println("Problema cargando la fuente"+nombre+".ttf");
 				return false;
 			}			
 		}
 		return true;
 	}
 
+	
+	/**
+	 * Carga las imagenes
+	 * 
+	 * @return True si se han cargado todas, False si no se han cargado todas
+	 */
 	private boolean cargarImg() {
+		
+		//recorrer lista de imagenes
 		for (String nombre : listaImg) {
 			try {
+				//cargar imagen
 				BufferedImage img =ImageIO.read(Recursos.class.getResourceAsStream("img/"+nombre+".png"));
-
 				imagenes.put(nombre, img);
-			} catch (IOException e) {
+			} catch (IOException|IllegalArgumentException e) {
 				System.out.println("Problema cargando la imagen "+nombre+".png");
 				return false;
 			}			
@@ -158,10 +208,22 @@ public class Recursos {
 		return true;
 	}
 	
+	/**
+	 * Devuelve una imagen cargada
+	 * @param nombre Key usada en el hasmap para identificar la imagen
+	 * 
+	 * @return La imagen como BufferedImage
+	 */
 	public BufferedImage getImg(String nombre) {
 		return imagenes.get(nombre);
 	}
 	
+	/**
+	 * Devuelve una fuente cargada
+	 * 
+	 * @param nombre Key usada en el hasmap para identificar la fuente
+	 * @return la fuente como Font
+	 */
 	public Font getFuente(String nombre) {
 		return fuentes.get(nombre);
 	}

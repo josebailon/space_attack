@@ -20,7 +20,7 @@ abstract public class Premio extends Dibujo implements Colisionable {
 	protected Partida partida;
 	BufferedImage[] fotogramas;
 	int fotogramaActual = 0;
-	int velocidad = Config.VELOCIDAD_FONDO_RAPIDA*2;
+	int velocidad = Config.VELOCIDAD_PREMIOS*2;
 	int radio;
 	public Premio(double x, double y, String codigo, int nFotogramas) {
 		super(x, y);

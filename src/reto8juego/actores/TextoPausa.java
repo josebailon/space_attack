@@ -7,8 +7,8 @@ import java.awt.Graphics2D;
 
 import reto8juego.config.Colores;
 import reto8juego.config.Config;
-import reto8juego.motor.Funcion;
 import reto8juego.recursos.Recursos;
+import reto8juego.recursos.Strings;
 
 /**
  * 
@@ -23,7 +23,7 @@ public class TextoPausa extends TextoCentrado {
 	 * @param funcionSalida
 	 */
 	public TextoPausa() {
- 		super("PAUSA", false, 0, null);
+ 		super(Strings.TEXTO_PAUSA, false, 0, null);
 		fuente = Recursos.getInstancia().getFuente("plasmati").deriveFont(Config.T_LETRA_2);
 	}
 

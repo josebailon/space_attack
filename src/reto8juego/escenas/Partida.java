@@ -26,25 +26,26 @@ import reto8juego.recursos.Strings;
  * @author Jose Javier Bailon Ortiz
  */
 public class Partida extends Escena {
-	TextoPausa textoPausa;
- 	int puntos = 0;
+	private TextoPausa textoPausa;
+ 	private int puntos = 0;
 	private Nave nave;
 	private int vidas=Config.VIDAS_INICIALES;
 	/**
 	 * La partida responde o no al teclado
 	 */
-	boolean controlActivo = false;
-	int nivel = 1;
-	boolean arriba = false;
-	boolean abajo = false;
-	boolean izquierda = false;
-	boolean derecha = false;
-	GeneradorMeteoritos generadorMeteoritos;
-	int siguienteOleada;
-	int[][] oleadasNivel;
-	GeneradorEnemigos generadorEnemigos;
+	private boolean controlActivo = false;
+	private int nivel = 1;
+	private boolean arriba = false;
+	private boolean abajo = false;
+	private boolean izquierda = false;
+	private boolean derecha = false;
+	private GeneradorMeteoritos generadorMeteoritos;
+	private int siguienteOleada;
+	private int[][] oleadasNivel;
+	private GeneradorEnemigos generadorEnemigos;
+	private boolean terminada =false;
 	
-	boolean terminada =false;
+	
 	/**
 	 * @param control
 	 * @param callbackTerminado
@@ -54,10 +55,32 @@ public class Partida extends Escena {
 		iniciar();
 	}
 
+	@Override
+	public void iniciar() {
+		motor.vaciarCapas();
+		controlActivo = false;
+		nivel = 1;
+		
+		addNave();
+		addGUI();
+		nuevoNivel();
+		generadorMeteoritos = new GeneradorMeteoritos(this);
+		generadorMeteoritos.start();
+	
+	}
+
+	@Override
+	public void terminar() {
+		controlActivo=false;
+		terminada=true;
+		generadorMeteoritos.terminar();
+		new Temporizador(6000, ()->callbackTerminado.apply());
+	}
+
 	/**
 	 * 
 	 */
-	private void iniciarNivel() {
+	private void nuevoNivel() {
 		if (terminada)
 			return;
 		oleadasNivel=Niveles.getNivel(nivel-1);
@@ -67,7 +90,7 @@ public class Partida extends Escena {
 		}
 		motor.agregarCapaGui(new TextoCentrado(Strings.NIVEL+" "+nivel, true, 2000,null));
 		siguienteOleada=0;
-		siguienteOleada();
+		lanzarSiguienteOleada();
 
 	}
 
@@ -87,34 +110,19 @@ public class Partida extends Escena {
 		terminar();
 	}
 	
-	@Override
-	public void iniciar() {
-		motor.vaciarCapas();
-		controlActivo = false;
-		nivel = 1;
-		
-		addNave();
-		addGUI();
-		iniciarNivel();
-		generadorMeteoritos = new GeneradorMeteoritos(this);
-		generadorMeteoritos.start();
-	
-	}
-
 	/**
 	 * @return
 	 */
-	private void siguienteOleada() {
+	private void lanzarSiguienteOleada() {
 		if (terminada)
 			return;
 		if (oleadasNivel!=null &&siguienteOleada==oleadasNivel.length) {
 			nivel++;
-			new Temporizador(5000, ()-> iniciarNivel());
+			new Temporizador(5000, ()-> nuevoNivel());
 			return;
 		}
 			
 		int[]  oleada = oleadasNivel[siguienteOleada];
-		siguienteOleada++;
 		//tiempo, MOV, tipo enemigo, cantidad, frecuencia
 		int tiempo=oleada[0];
 		int x = oleada[1];
@@ -123,6 +131,7 @@ public class Partida extends Escena {
 		int cantidad=oleada[4];
 		int frecuencia=oleada[5];
 		new Temporizador(tiempo, ()->crearOleada(x, mov,tipoEnem,cantidad,frecuencia));
+		siguienteOleada++;
 	}
 
 	/**
@@ -133,24 +142,21 @@ public class Partida extends Escena {
 	 * @return
 	 */
 	private void crearOleada(int x, int mov, int tipoEnem, int cantidad, int frecuencia) {
-		
 		generadorEnemigos=new  GeneradorEnemigos(this, x, mov, tipoEnem, cantidad, frecuencia, nivel);
 		generadorEnemigos.start();
-		siguienteOleada();
+		lanzarSiguienteOleada();
 	}
 
-	private void resetControl() {
-		arriba = false;
-		abajo = false;
-		izquierda = false;
-		derecha = false;
-	}
+ 
 	
 	/**
 	 * 
 	 */
 	private void addNave() {
-		resetControl();
+		arriba = false;
+		abajo = false;
+		izquierda = false;
+		derecha = false;
 		controlActivo=false;
 		nave = new Nave(this);
 		motor.agregarCapaNave(nave);
@@ -168,14 +174,6 @@ public class Partida extends Escena {
 		motor.agregarCapaGui(new VisorSaludNivel(this));
 		motor.agregarCapaGui(new VisorPuntos(this));
 		
-	}
-
-	@Override
-	public void terminar() {
-		controlActivo=false;
-		terminada=true;
-		generadorMeteoritos.terminar();
-		new Temporizador(6000, ()->callbackTerminado.apply());
 	}
 
 	@Override
@@ -240,7 +238,7 @@ public class Partida extends Escena {
 	/**
 	 * 
 	 */
-	public void naveDestruida() {
+	public void destruirNave() {
 		vidas--;
 		if (vidas>0) {
 			addNave();
@@ -260,6 +258,14 @@ public class Partida extends Escena {
 	}
 
 	/**
+	 * 
+	 */
+	public void agregarVida() {
+		vidas++;
+		
+	}
+
+	/**
 	 * @return
 	 */
 	public int getPuntos() {
@@ -271,14 +277,6 @@ public class Partida extends Escena {
 	 */
 	public int getVidas() {
 		return vidas;
-	}
-
-	/**
-	 * 
-	 */
-	public void agregarVida() {
-		vidas++;
-		
 	}
  
 

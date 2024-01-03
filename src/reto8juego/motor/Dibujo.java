@@ -48,7 +48,7 @@ public abstract class Dibujo {
 	abstract public void dibujar (Graphics2D g2d);
 	
 	
- 	public void nuevoFotograma(int frame, long delta,float deltaSegundo) {
+ 	public void nuevoFotograma(int frame, long delta,float deltaPorSegundo) {
 		if (animacionY!=null)
 			y=(double) animacionY.getValor();
 		if (animacionX!=null)

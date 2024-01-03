@@ -130,7 +130,7 @@ public class Nave extends Dibujo implements Colisionable, Disparable{
 		//generar explosion y morir
 		motor.agregarCapaFx(new Explosion(x, y, Explosion.NAVE));
 		vivo=false;
-		partida.naveDestruida();
+		partida.destruirNave();
 	}
 
 	@Override
