@@ -6,7 +6,6 @@ package reto8juego.motor;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 
 import reto8juego.config.Config;
 import reto8juego.escenas.Partida;
@@ -60,7 +59,6 @@ abstract public class Premio extends Dibujo implements Colisionable {
 
 		// recoger fotogramas
 		fotogramas = new BufferedImage[nFotogramas];
-		Random r = new Random();
 		for (int i = 0; i < fotogramas.length; i++) {
 			this.fotogramas[i] = Recursos.getInstancia().getImg(codigo + i);
 		}

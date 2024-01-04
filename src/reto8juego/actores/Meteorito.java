@@ -90,8 +90,9 @@ public class Meteorito extends Dibujo implements Disparable, Colisionable {
 	}
 
 	/**
-	 * Dibuja el meteorito. Hace una traslacion hasta la posicion, rotacion y traslacion segun el ancho para
-	 * hacer que el meteorito rote sobre si mismo mientras se desplaza
+	 * Dibuja el meteorito. Hace una traslacion hasta la posicion, rotacion y
+	 * traslacion segun el ancho para hacer que el meteorito rote sobre si mismo
+	 * mientras se desplaza
 	 */
 	@Override
 	public void dibujar(Graphics2D g2d) {
@@ -103,6 +104,10 @@ public class Meteorito extends Dibujo implements Disparable, Colisionable {
 		at.setToIdentity();
 	}
 
+	/**
+	 * Recalcula la posicion y orientacion segun la velocidad en x,y y su velocidad
+	 * angular
+	 */
 	@Override
 	public void nuevoFotograma(int frame, long delta, float deltaSegundo) {
 		x += deltaSegundo * vX * nivel * 100;
@@ -151,7 +156,7 @@ public class Meteorito extends Dibujo implements Disparable, Colisionable {
 		// componentes de vector de posicion relativa
 		double xt = Math.abs(otro.getX()) - x;
 		double yt = Math.abs(otro.getY()) - y;
-		// comprobacion de que se solapan las cajas contenedoras
+		// comprobar si se solapan las cajas contenedoras
 		if (xt - otro.getRadio() > radio || yt - otro.getRadio() > radio)
 			return false;
 
@@ -170,28 +175,39 @@ public class Meteorito extends Dibujo implements Disparable, Colisionable {
 		return colisionado;
 	}
 
+	/**
+	 * Cuando el meteorito muere genera una animacion de explosion y un premio
+	 */
 	@Override
 	public void matar() {
 		salud.set(0);
 		// generar explosion y morir
 		motor.agregarCapaFx(new Explosion(x, y, Explosion.METEORITO));
 		vivo = false;
+		// generar premio
 		crearPremio();
 	}
 
 	/**
-	 * 
+	 * Crea un premio al azar con las siguientes probabilidades:
+	 * <ul>
+	 * <li>50%: puntos</li>
+	 * <li>30%: salud</li>
+	 * <li>12%: escudo</li>
+	 * <li>5%: mejora arma</li>
+	 * <li>3%: vida extra</li>
+	 * </ul>
 	 */
 	private void crearPremio() {
 		Premio premio;
-		int azar = r.nextInt(1000);
-		if (azar > 500)
+		int azar = r.nextInt(100);
+		if (azar > 50)
 			premio = new PremioPuntos(x, y, nivel);
-		else if (azar > 200)
+		else if (azar > 20)
 			premio = new PremioSalud(x, y);
-		else if (azar > 80)
+		else if (azar > 8)
 			premio = new PremioEscudo(x, y);
-		else if (azar > 30)
+		else if (azar > 3)
 			premio = new PremioArma(x, y);
 		else
 			premio = new PremioVida(x, y);

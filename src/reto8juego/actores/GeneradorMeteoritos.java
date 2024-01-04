@@ -31,11 +31,6 @@ public class GeneradorMeteoritos extends Thread {
 	private boolean vivo = true;
 
 	/**
-	 * Referencia a la partida
-	 */
-	private Partida partida;
-
-	/**
 	 * Nivel actual de generacion de meteoritos
 	 */
 	private int nivel = 1;
@@ -51,7 +46,6 @@ public class GeneradorMeteoritos extends Thread {
 	 * @param partida Referencia a la partida
 	 */
 	public GeneradorMeteoritos(Partida partida) {
-		this.partida = partida;
 		motor = Motor.getInstancia();
 	}
 

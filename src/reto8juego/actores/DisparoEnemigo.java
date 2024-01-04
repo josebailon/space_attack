@@ -14,9 +14,12 @@ import reto8juego.recursos.Recursos;
 public class DisparoEnemigo extends Disparo {
 
 	/**
-	 * @param x Posicion x
-	 * @param y Posicion y
-	 * @param fuerza Fuerza de impacto
+	 * Constructor 
+	 * @param x Posicion X 
+	 * @param y Posicion Y
+	 * @param vX Velocidad X
+	 * @param vY Velocidad Y
+	 * @param fuerza Fuerza del disparo
 	 */
 	public DisparoEnemigo(double x, double y,double vX,double vY,int fuerza) {
 		super(Recursos.getInstancia().getImg("disparoEnemigo"), x, y, vX, vY, fuerza);

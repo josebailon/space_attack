@@ -27,7 +27,7 @@ public class Lienzo extends JPanel implements ActionListener {
 	/**
 	 * Lista de capas a dibujar
 	 */
-	ArrayList<LinkedBlockingDeque<Dibujo>> capas = new ArrayList();
+	ArrayList<LinkedBlockingDeque<Dibujo>> capas = new ArrayList<LinkedBlockingDeque<Dibujo>>();
 
 
 	@Override
@@ -40,7 +40,6 @@ public class Lienzo extends JPanel implements ActionListener {
 				it.next().dibujar(g2);
 			}
 		}
-
 	}
 
  	/**

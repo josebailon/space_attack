@@ -27,26 +27,26 @@ import reto8juego.gui.Lienzo;
  * <p>
  * Se trata de un hilo que lleva un seguimiento del tiempo en funcion del cual
  * controla un bucle de fotograma en el que se encarga de ir actualizando el
- * estado de los diferentes elementos que hay en las capas usando para algunas
- * de las fases del calculo threadpools.
+ * estado de los diferentes elementos que hay en las capas usando threadpools
+ * para algunas de las fases del calculo.
  * </p>
  * 
  * <p>
  * El ciclo de fotograma esta implementado en el metodo {@link Motor#run()} y se
  * compone de las siguientes fases:
- * <ul>
+ * <ol>
  * <li>Comprobar si el motor esta en pausa. Si esta en pausa se queda
  * esperando</li>
  * <li>Calcular el tiempo delta(Tiempo transcurrido tras el anterior
  * fotograma)</li>
- * <li>Limpiar las capas eliminando los dibujos establecidods como no vivos</li>
+ * <li>Limpiar las capas eliminando los dibujos establecidos como no vivos</li>
  * <li>Animar los dibujos</li>
  * <li>Detectar las colisiones favorables(premios, disparos amigos)</li>
  * <li>Detectar las colisiones desfavorables(colisiones de la nave con
  * meteoritos, enemigos y disparos enemigos)</li>
  * <li>Ordenar el dibujado de elementos en el lienzo</li>
  * <li>Esperar para la limitacion de fotogramas en caso de ser necesario</li>
- * </ul>
+ * </ol>
  * </p>
  * 
  * 
@@ -204,18 +204,18 @@ public class Motor extends Thread {
 
 	/**
 	 * Bucle de fotograma. Contiene las fases:
-	 * <ul>
-	 * <li>Comprobar si el motor esta en funcionamiento. Si esta en pausa se queda
+	 * <ol>
+	 * <li>Comprobar si el motor esta en pausa. Si esta en pausa se queda
 	 * esperando</li>
 	 * <li>Calcular el delta(Tiempo transcurrido tras el anterior fotograma)</li>
-	 * <li>Limpiar las capas eliminando los dibujos establecidods como no vivos</li>
+	 * <li>Limpiar las capas eliminando los dibujos establecidos como no vivos</li>
 	 * <li>Animar los dibujos</li>
 	 * <li>Detectar las colisiones favorables(premios, disparos amigos)</li>
 	 * <li>Detectar las colisiones desfaborables(colisiones de la nave con
 	 * meteoritos, enemigos y disparos enemigos)</li>
 	 * <li>Ordenar el dibujado de elementos en el lienzo</li>
 	 * <li>Esperar para la limitacion de fotogramas en caso de ser necesario</li>
-	 * </ul>
+	 * </ol>
 	 */
 	@Override
 	public void run() {
@@ -223,23 +223,10 @@ public class Motor extends Thread {
 		// comprobar si esta en funcionamiento
 		while (true) {
 			// check pausa
-			synchronized (this) {
-				if (!play)
-					try {
-						wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-			}
+			comprobarPausa();
 
 			// calcular delta y acutalizar tiempo del motor
-			long ahora = System.currentTimeMillis();
-			delta = ahora - ultimoTiempo;
-			tiempo.addAndGet(delta);
-			deltaPorSegundo = delta / 1000f;
-			ultimoTiempo = ahora;
-			// pasar frame
-			frame++;
+			calcularDelta();
 
 			// limpieza
 			limpiar();
@@ -252,22 +239,54 @@ public class Motor extends Thread {
 
 			// detectar colisiones desfavorables
 			colisionesDesfavorables();
-
-			// Lanzar el dibujado
+ 			// Lanzar el dibujado
 			if (lienzo != null)
 				lienzo.repaint();
-
-			// limitar frames si el tiempo de procesamiento del frame es menor que lo que
+ 			// limitar frames si el tiempo de procesamiento del frame es menor que lo que
 			// establece la limitacion
-			long tActual = System.currentTimeMillis();
-			long dormir = (long) (tActual - ultimoTiempo - duracionFotograma);
-			if (dormir < 0)
-				try {
-					sleep(-dormir);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+			limitarFps();
 		}
+	}
+
+	/**
+	 * Limita los fotogramas por segundo si el tiempo de procesamiento del ultimo
+	 * fotogramaes menor que lo que establece la limitacion
+	 */
+	private void limitarFps() {
+		long tActual = System.currentTimeMillis();
+		long dormir = (long) (tActual - ultimoTiempo - duracionFotograma);
+		if (dormir < 0)
+			try {
+				sleep(-dormir);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+	}
+
+	/**
+	 * Comprueba si el motor tiene play como false. Si es asi el hilo espera.
+	 */
+	private synchronized void comprobarPausa() {
+		if (!play)
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+	}
+
+	/**
+	 * Calcula el tiempo delta del fotograma (tiempo trascrurrido desde el inicio
+	 * del frame anterior)
+	 */
+	private void calcularDelta() {
+		long ahora = System.currentTimeMillis();
+		delta = ahora - ultimoTiempo;
+		tiempo.addAndGet(delta);
+		deltaPorSegundo = delta / 1000f;
+		ultimoTiempo = ahora;
+		// pasar frame
+		frame++;
 	}
 
 	/**

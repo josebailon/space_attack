@@ -22,12 +22,12 @@ public class Recursos {
 	/**
 	 * Imagenes cargadas
 	 */
-	private HashMap<String, BufferedImage> imagenes=new HashMap();
+	private HashMap<String, BufferedImage> imagenes=new HashMap<String, BufferedImage>();
 	
 	/**
 	 * Fuentes cargadas
 	 */
-	private HashMap<String, Font> fuentes=new HashMap();
+	private HashMap<String, Font> fuentes=new HashMap<String, Font>();
 	
 	/**
 	 * Lista de imagenes a cargar

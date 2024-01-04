@@ -84,13 +84,13 @@ public class EscenaInicial extends Escena {
 		if (!controlActivo)
 			return;
 		int kc = e.getKeyCode();
-		if (kc == e.VK_ENTER || kc == e.VK_SPACE) {
+		if (kc == KeyEvent.VK_ENTER || kc == KeyEvent.VK_SPACE) {
 			controlActivo = false;
-			menu.animacionSalida();
+			menu.activarOpcionSeleccionada();
 			textoTitulo.animacionSalida();
-		} else if (kc == e.VK_UP)
+		} else if (kc == KeyEvent.VK_UP)
 			menu.subirOpcionSeleccionada();
-		else if (kc == e.VK_DOWN)
+		else if (kc == KeyEvent.VK_DOWN)
 			menu.bajarOpcionSeleccionada();
 	}
 

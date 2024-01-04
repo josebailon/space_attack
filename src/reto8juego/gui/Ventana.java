@@ -18,10 +18,7 @@ import reto8juego.config.Config;
 public class Ventana extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Referencia al controlador
-	 */
-	private Controlador control;
+
 	
 	/**
 	 * Lienzo de dibujado
@@ -34,7 +31,6 @@ public class Ventana extends JFrame {
 	 * @param control Referencia al controlador
 	 */
 	public Ventana(Controlador control) {
-		this.control=control;
 		
 		//configurar ventana
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

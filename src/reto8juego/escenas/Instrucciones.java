@@ -92,7 +92,7 @@ public class Instrucciones extends Escena {
 			lineas[i] = texto;
 			// espera para generar efecto de ola
 			try {
-				Thread.currentThread().sleep(100);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -340,13 +340,13 @@ public class Partida extends Escena {
 	public void keyPressed(KeyEvent e) {
 		int kc = e.getKeyCode();
 		if (controlActivo) {
-			if (kc == e.VK_UP)
+			if (kc == KeyEvent.VK_UP)
 				arriba = true;
-			if (kc == e.VK_DOWN)
+			if (kc == KeyEvent.VK_DOWN)
 				abajo = true;
-			if (kc == e.VK_LEFT)
+			if (kc == KeyEvent.VK_LEFT)
 				izquierda = true;
-			if (kc == e.VK_RIGHT)
+			if (kc == KeyEvent.VK_RIGHT)
 				derecha = true;
 
 			// avisar del nuevo estado de las teclas a la nave
@@ -362,8 +362,9 @@ public class Partida extends Escena {
 	@Override
 	public void keyReleased(KeyEvent e) {
 		int kc = e.getKeyCode();
-
-		if (kc == e.VK_P) {
+		
+		//detectar tecla para pausa
+		if (kc == KeyEvent.VK_P) {
 			if (!motor.togglePlay()) {
 				textoPausa = new TextoPausa();
 				motor.agregarCapaGui(textoPausa);
@@ -373,17 +374,20 @@ public class Partida extends Escena {
 			}
 		}
 
+		//detectar teclas cursor y espacio
 		if (controlActivo) {
-			if (kc == e.VK_UP)
+			if (kc == KeyEvent.VK_UP)
 				arriba = false;
-			if (kc == e.VK_DOWN)
+			if (kc == KeyEvent.VK_DOWN)
 				abajo = false;
-			if (kc == e.VK_LEFT)
+			if (kc == KeyEvent.VK_LEFT)
 				izquierda = false;
-			if (kc == e.VK_RIGHT)
+			if (kc == KeyEvent.VK_RIGHT)
 				derecha = false;
-			if (kc == e.VK_SPACE)
+			if (kc == KeyEvent.VK_SPACE)
 				nave.disparar();
+			
+			// avisar del nuevo estado de las teclas a la nave
 			nave.teclas(arriba, abajo, izquierda, derecha);
 		}
 
@@ -415,7 +419,7 @@ public class Partida extends Escena {
 	/**
 	 * Resta una vida y agrega una nueva nave
 	 */
-	public void destruirNave() {
+	public void naveDestruida() {
 		vidas--;
 		if (vidas > 0) {
 			addNave();

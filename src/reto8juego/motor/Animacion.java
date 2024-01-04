@@ -1,7 +1,6 @@
 
 package reto8juego.motor;
 
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *  Animacion autonoma entre dos valores. Un hilo independiente

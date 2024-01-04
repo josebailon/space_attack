@@ -8,7 +8,7 @@ import reto8juego.recursos.Recursos;
 
 /**
  * Disparo efectuado por la nave del jugador.
- * 
+ * Se mueve verticalmente hacia arriba desde la posicion de la nave
  * @author Jose Javier Bailon Ortiz
  */
 public class DisparoAmigo extends Disparo {

@@ -129,7 +129,7 @@ public abstract class Dibujo {
 	 * @param x Posicion x
 	 * @param y Posicion y
 	 */
-	public Dibujo(double x, double y) {
+	protected Dibujo(double x, double y) {
 		this.x = x;
 		this.y = y;
 		motor = Motor.getInstancia();
