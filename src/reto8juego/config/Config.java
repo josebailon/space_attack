@@ -31,7 +31,7 @@ public class Config {
 	/**
 	 * Alto de la ventana
 	 */
-	public static final int ALTO = 1024;
+	public static final int ALTO = 960;
 	
 	/**
 	 * Localizacion del centro vertical
@@ -109,7 +109,7 @@ public class Config {
 	/**
 	 * Velocidad a la que se mueven los premios
 	 */
-	public static final int VELOCIDAD_PREMIOS = 50;
+	public static final int VELOCIDAD_PREMIOS = 100;
 	
 	/**
 	 * Intervalo de creacion de meteoritos

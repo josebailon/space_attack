@@ -16,7 +16,7 @@ import reto8juego.config.Colores;
 import reto8juego.config.Config;
 import reto8juego.escenas.Partida;
 import reto8juego.motor.Animacion;
-import reto8juego.motor.AnimacionFrenada;
+import reto8juego.motor.Animacion;
 import reto8juego.motor.Dibujo;
 import reto8juego.motor.Motor;
 import reto8juego.recursos.Recursos;
@@ -40,7 +40,7 @@ public class VisorPuntos extends Dibujo {
 		mitadAlto=alto/2;
 		this.x=Config.CENTRO_ANCHO-mitadAncho;
 		this.y=-alto;
-		animacionY = new AnimacionFrenada(Config.DURACION_TRANSICION,(float)this.y,0,()->animacionY=null);
+		animacionY = new Animacion(Config.DURACION_TRANSICION,(float)this.y,0,()->animacionY=null);
 	}
 
 	@Override

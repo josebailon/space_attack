@@ -10,7 +10,7 @@ import java.awt.Graphics2D;
 
 import reto8juego.config.Colores;
 import reto8juego.config.Config;
-import reto8juego.motor.AnimacionFrenada;
+import reto8juego.motor.Animacion;
 import reto8juego.motor.Dibujo;
 import reto8juego.motor.Funcion;
 import reto8juego.recursos.Recursos;
@@ -42,19 +42,19 @@ public class TextoCentrado extends Dibujo {
 		tiempoInicio = motor.getTiempo();
 		if (animada) {
 			opacidad=0;
-		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 0, 254, () -> animacionOpacidad = null);
-		animacionY = new AnimacionFrenada(Config.DURACION_TRANSICION, Config.CENTRO_ALTO - 100, Config.CENTRO_ALTO,
+		animacionOpacidad = new Animacion(Config.DURACION_TRANSICION, 0, 254, () -> animacionOpacidad = null);
+		animacionY = new Animacion(Config.DURACION_TRANSICION, Config.CENTRO_ALTO - 100, Config.CENTRO_ALTO,
 				() -> animacionY = null);
 		}
 	}
 
 	public void animacionSalida() {
-		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 254, 0, () -> {
+		animacionOpacidad = new Animacion(Config.DURACION_TRANSICION, 254, 0, () -> {
 			if (funcionSalida != null)
 				funcionSalida.apply();
 			vivo = false;
 		});
-		animacionY = new AnimacionFrenada(Config.DURACION_TRANSICION, Config.CENTRO_ALTO, Config.CENTRO_ALTO + 100,
+		animacionY = new Animacion(Config.DURACION_TRANSICION, Config.CENTRO_ALTO, Config.CENTRO_ALTO + 100,
 				null);
 	}
 

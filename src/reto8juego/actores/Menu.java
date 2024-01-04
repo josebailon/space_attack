@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage;
 import reto8juego.Controlador;
 import reto8juego.config.Colores;
 import reto8juego.config.Config;
-import reto8juego.motor.AnimacionFrenada;
+import reto8juego.motor.Animacion;
 import reto8juego.motor.Dibujo;
 import reto8juego.motor.Funcion;
 import reto8juego.recursos.Recursos;
@@ -35,7 +35,7 @@ public class Menu extends Dibujo {
 		for (int i=0;i<imgSeleccionado.length;i++)
 			imgSeleccionado[i]=Recursos.getInstancia().getImg("menu"+i);
 		// animar opacidad a la entrada
-		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 0, 254, () -> animacionOpacidad = null);
+		animacionOpacidad = new Animacion(Config.DURACION_TRANSICION, 0, 254, () -> animacionOpacidad = null);
 
 	}
 
@@ -47,7 +47,7 @@ public class Menu extends Dibujo {
 		case 2 ->{f=() -> control.salir();}
 		}
 		// animar opacidad en la salida
-		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 254, 0, f);
+		animacionOpacidad = new Animacion(Config.DURACION_TRANSICION, 254, 0, f);
 	}
 
 	public void subirOpcionSeleccionada() {

@@ -3,36 +3,55 @@
  */
 package reto8juego.motor;
 
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 
+ * Hilo independiente que ejecuta una accion definida en un callback una vez
+ * ha transcurrido el tiempo del motor especificado 
  * @author Jose Javier Bailon Ortiz
  */
-public class Temporizador extends Animacion {
-	long duracion;
-	float valorA;
-	float valorB;
-	float rango;
-	Funcion callback;
-	boolean terminado = false;
-	Motor motor;
+public class Temporizador extends Thread {
+	
+	/**
+	 * Tiempo a esperar antes de ejecutar la accion
+	 */
+	private long espera;
+	
+	/**
+	 * Accion a ejecutar al pasar el tiempo
+	 */
+	private Funcion callback;
+	
+	/**
+	 * Referencia al motor
+	 */
+	private Motor motor;
 
-	public Temporizador(long duracion, Funcion callback) {
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param espera Tiempo a esperar
+	 * @param callback Callback a ejetuar tras la espera
+	 */
+	public Temporizador(long espera, Funcion callback) {
 		motor = Motor.getInstancia();
-		this.duracion = duracion;
+		this.espera = espera;
 		this.callback = callback;
 		this.start();
 	}
 
+	/**
+	 * Comprueba cada 10 ms si el tiempo del motor ha pasado 
+	 * hasta completar la espera
+	 */
 	@Override
 	public void run() {
+		//tiempo inicial en el motor
 		long inicio = motor.getTiempo();
 		boolean terminar = false;
+		//Buble mientras el motor no haya avanzado el tiempo necesario
 		while (!terminar) {
-			long ahora = motor.getTiempo();
-			float delta = (float) (ahora - inicio) / (float) duracion;
-			if (motor.getTiempo() > inicio + duracion) {
+ 			if (motor.getTiempo() > inicio + espera) {
 				terminar = true;
 			} else {
 				try {
@@ -42,6 +61,8 @@ public class Temporizador extends Animacion {
 				}
 			}
 		}
+		
+		//ejecutar el callback
 		if (callback != null)
 			callback.apply();
 	}

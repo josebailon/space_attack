@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
 import reto8juego.config.Colores;
 import reto8juego.config.Config;
 import reto8juego.escenas.Partida;
-import reto8juego.motor.AnimacionFrenada;
+import reto8juego.motor.Animacion;
 import reto8juego.motor.Dibujo;
 import reto8juego.motor.Motor;
 import reto8juego.recursos.Recursos;
@@ -37,7 +37,7 @@ public class VisorSaludNivel extends Dibujo {
 		this.y=motor.getAlto();
 		imgVidas=Recursos.getInstancia().getImg("nave7");
 		fuente = Recursos.getInstancia().getFuente("plasmati").deriveFont(Config.T_LETRA_0);
-		animacionY = new AnimacionFrenada(Config.DURACION_TRANSICION,(float)this.y,(float)this.y-alto-Config.MARGEN_GUI,()->animacionY=null);
+		animacionY = new Animacion(Config.DURACION_TRANSICION,(float)this.y,(float)this.y-alto-Config.MARGEN_GUI,()->animacionY=null);
 	}
 
 	@Override

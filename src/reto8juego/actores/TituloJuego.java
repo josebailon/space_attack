@@ -10,7 +10,7 @@ import java.awt.Graphics2D;
 
 import reto8juego.config.Colores;
 import reto8juego.config.Config;
-import reto8juego.motor.AnimacionFrenada;
+import reto8juego.motor.Animacion;
 import reto8juego.motor.Dibujo;
 import reto8juego.recursos.Recursos;
 import reto8juego.recursos.Strings;
@@ -29,13 +29,13 @@ public class TituloJuego extends Dibujo {
 		fuente = Recursos.getInstancia().getFuente("COMPUTERRobot").deriveFont(Config.T_LETRA_TITULO);
 		
 		//animar opacidad a la entrada
-		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 0, 254, () -> animacionOpacidad = null);
+		animacionOpacidad = new Animacion(Config.DURACION_TRANSICION, 0, 254, () -> animacionOpacidad = null);
 
 	}
 
 	public void animacionSalida() {
 		//animar opacidad en la salida
-		animacionOpacidad = new AnimacionFrenada(Config.DURACION_TRANSICION, 254, 0, null);
+		animacionOpacidad = new Animacion(Config.DURACION_TRANSICION, 254, 0, null);
 	}
 
 	@Override

@@ -19,26 +19,31 @@ import reto8juego.gui.Lienzo;
 /**
  * <p>
  * Motor de comportamiento del juego. Trabaja en conjuncion a la escena actual
- * establecida. Lanzando el limpiado, la animacion y la deteccion de colisiones
- * cuando toque segun el bucle de fotograma. Organiza los elementos en capas
- * cada una dedicada a un proposito, capa de fondo, de disparos, de naves, de
- * premios y de GUI.
+ * establecida. Lanza el limpiado de elementos, la animacion y la deteccion de
+ * colisiones cuando toque segun el bucle de fotograma. Organiza los elementos
+ * en capas cada una dedicada a un proposito, capas de fondo, de disparos, de
+ * naves, de premios y de GUI.
  * </p>
  * <p>
- * Se trata de un hilo que lleva un seguimiento del tiempo en funcion del cual controla
- * un bucle de fotograma en el que se encarga de ir actualizando el estado de los diferentes elementos
- * que hay en las capas.
+ * Se trata de un hilo que lleva un seguimiento del tiempo en funcion del cual
+ * controla un bucle de fotograma en el que se encarga de ir actualizando el
+ * estado de los diferentes elementos que hay en las capas usando para algunas
+ * de las fases del calculo threadpools.
  * </p>
  * 
  * <p>
- * Cada ciclo del bucle de fotograma se compone de las siugientes fases:
+ * El ciclo de fotograma esta implementado en el metodo {@link Motor#run()} y se
+ * compone de las siguientes fases:
  * <ul>
- * <li>Comprobar si el motor esta en funcionamiento. Si esta en pausa se queda esperando</li>
- * <li>Calcular el delta(Tiempo transcurrido tras el anterior fotograma)</li>
+ * <li>Comprobar si el motor esta en pausa. Si esta en pausa se queda
+ * esperando</li>
+ * <li>Calcular el tiempo delta(Tiempo transcurrido tras el anterior
+ * fotograma)</li>
  * <li>Limpiar las capas eliminando los dibujos establecidods como no vivos</li>
  * <li>Animar los dibujos</li>
  * <li>Detectar las colisiones favorables(premios, disparos amigos)</li>
- * <li>Detectar las colisiones desfaborables(colisiones de la nave con meteoritos, enemigos y disparos enemigos)</li>
+ * <li>Detectar las colisiones desfavorables(colisiones de la nave con
+ * meteoritos, enemigos y disparos enemigos)</li>
  * <li>Ordenar el dibujado de elementos en el lienzo</li>
  * <li>Esperar para la limitacion de fotogramas en caso de ser necesario</li>
  * </ul>
@@ -47,7 +52,6 @@ import reto8juego.gui.Lienzo;
  * 
  * @author Jose Javier Bailon Ortiz
  */
- 
 
 public class Motor extends Thread {
 
@@ -180,18 +184,43 @@ public class Motor extends Thread {
 	 */
 	private Escena escenaActual;
 
+	/**
+	 * Constructor privado para singleton
+	 */
 	private Motor() {
 		this.start();
 	}
 
+	/**
+	 * Devuelve la instancia singleton y la crea de ser necesario
+	 * 
+	 * @return La instancia singleton
+	 */
 	public static Motor getInstancia() {
 		if (instancia == null)
 			instancia = new Motor();
 		return instancia;
 	}
 
+	/**
+	 * Bucle de fotograma. Contiene las fases:
+	 * <ul>
+	 * <li>Comprobar si el motor esta en funcionamiento. Si esta en pausa se queda
+	 * esperando</li>
+	 * <li>Calcular el delta(Tiempo transcurrido tras el anterior fotograma)</li>
+	 * <li>Limpiar las capas eliminando los dibujos establecidods como no vivos</li>
+	 * <li>Animar los dibujos</li>
+	 * <li>Detectar las colisiones favorables(premios, disparos amigos)</li>
+	 * <li>Detectar las colisiones desfaborables(colisiones de la nave con
+	 * meteoritos, enemigos y disparos enemigos)</li>
+	 * <li>Ordenar el dibujado de elementos en el lienzo</li>
+	 * <li>Esperar para la limitacion de fotogramas en caso de ser necesario</li>
+	 * </ul>
+	 */
 	@Override
 	public void run() {
+
+		// comprobar si esta en funcionamiento
 		while (true) {
 			// check pausa
 			synchronized (this) {
@@ -203,7 +232,7 @@ public class Motor extends Thread {
 					}
 			}
 
-			// calcular delta
+			// calcular delta y acutalizar tiempo del motor
 			long ahora = System.currentTimeMillis();
 			delta = ahora - ultimoTiempo;
 			tiempo.addAndGet(delta);
@@ -211,20 +240,25 @@ public class Motor extends Thread {
 			ultimoTiempo = ahora;
 			// pasar frame
 			frame++;
+
 			// limpieza
 			limpiar();
+
 			// animar
 			animar();
+
 			// detectar colisiones favorables
 			colisionesFavorables();
+
 			// detectar colisiones desfavorables
 			colisionesDesfavorables();
 
-			// pintar
+			// Lanzar el dibujado
 			if (lienzo != null)
 				lienzo.repaint();
 
-			// limitar frames
+			// limitar frames si el tiempo de procesamiento del frame es menor que lo que
+			// establece la limitacion
 			long tActual = System.currentTimeMillis();
 			long dormir = (long) (tActual - ultimoTiempo - duracionFotograma);
 			if (dormir < 0)
@@ -233,16 +267,21 @@ public class Motor extends Thread {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-			ultimoTiempo = ahora;
 		}
 	}
 
+	/**
+	 * Pone en funcionamiento el motor
+	 */
 	public synchronized void play() {
 		ultimoTiempo = System.currentTimeMillis();
 		play = true;
 		notify();
 	}
 
+	/**
+	 * Pausa el motor
+	 */
 	public synchronized void pause() {
 		play = false;
 	}
@@ -261,6 +300,12 @@ public class Motor extends Thread {
 		return play;
 	}
 
+	/**
+	 * Define el lienzo actual del motor donde se dibujaran los elementos. Manda las
+	 * capas de dibujado al lienzo y agrega el fondo
+	 * 
+	 * @param lienzo El lienzo a definir
+	 */
 	public void setLienzo(Lienzo lienzo) {
 		this.lienzo = lienzo;
 		this.ancho = lienzo.getWidth();
@@ -272,24 +317,46 @@ public class Motor extends Thread {
 		agregarCapaFondo(new Fondo());
 	}
 
+	/**
+	 * Define la escena actual
+	 * 
+	 * @param escena La escena
+	 */
 	public void setEscena(Escena escena) {
 		this.escenaActual = escena;
 	}
 
+	/**
+	 * Devuelve la escena actual
+	 * 
+	 * @return La escena
+	 */
 	public Escena getEscena() {
 		return this.escenaActual;
 	}
 
+	/**
+	 * Devuelve el ancho del area de dibujado
+	 * 
+	 * @return El ancho del area
+	 */
 	public int getAncho() {
 		return ancho;
 	}
 
+	/**
+	 * Devuelve el alto del area de dibujado
+	 * 
+	 * @return El alto
+	 */
 	public int getAlto() {
 		return alto;
 	}
 
 	/**
-	 * @return
+	 * Devuelve el momento actual en el reloj del motor
+	 * 
+	 * @return El momento actual
 	 */
 	public long getTiempo() {
 		return tiempo.get();
@@ -304,34 +371,55 @@ public class Motor extends Thread {
 	}
 
 	/**
+	 * Agrega un dibujo a la capa fondo
 	 * 
+	 * @param dibujo El dibujo
 	 */
 	public void agregarCapaFondo(Dibujo dibujo) {
 		capaFondo.add(dibujo);
 	}
 
+	/**
+	 * Agrega un dibujo a la capa nave
+	 * 
+	 * @param dibujo El dibujo
+	 */
 	public void agregarCapaNave(Dibujo dibujo) {
 		capaNave.add(dibujo);
 	}
 
+	/**
+	 * Agrega un dibujo a la capa GUI
+	 * 
+	 * @param dibujo El dibujo
+	 */
 	public void agregarCapaGui(Dibujo dibujo) {
 		capaGui.add(dibujo);
 	}
 
+	/**
+	 * Agrega un disparo a la capa de disparos amigos
+	 * 
+	 * @param disparo El disparo
+	 */
 	public void agregarCapaDisparosAmigos(Disparo disparo) {
 		capaDisparosAmigos.add(disparo);
 	}
 
 	/**
-	 * @param m
+	 * Agrega un meteorito a la capa de meteoritos
+	 * 
+	 * @param meteorito El meteorito
 	 */
-	public void agregarCapaMeteoritos(Dibujo dibujo) {
-		capaMeteoritos.add(dibujo);
+	public void agregarCapaMeteoritos(Meteorito meteorito) {
+		capaMeteoritos.add(meteorito);
 
 	}
 
 	/**
-	 * @param explosionMeteorito
+	 * Agrega un dibujo a la capa de premios
+	 * 
+	 * @param dibujo El dibujo
 	 */
 	public void agregarCapaPremios(Dibujo dibujo) {
 		capaPremios.add(dibujo);
@@ -339,7 +427,9 @@ public class Motor extends Thread {
 	}
 
 	/**
-	 * @param explosionMeteorito
+	 * Agrega un dibujo a la capa FX (explosiones)
+	 * 
+	 * @param dibujo El dibujo
 	 */
 	public void agregarCapaFx(Dibujo dibujo) {
 		capaFx.add(dibujo);
@@ -347,7 +437,9 @@ public class Motor extends Thread {
 	}
 
 	/**
-	 * @param enemigo
+	 * Agrega un enemigo a la capa de enemigos
+	 * 
+	 * @param enemigo El enemigo
 	 */
 	public void agregarCapaEnemigos(Enemigo enemigo) {
 		capaEnemigos.add(enemigo);
@@ -355,14 +447,16 @@ public class Motor extends Thread {
 	}
 
 	/**
-	 * @param disparoEnemigo
+	 * Agrega un disparo a la capa de disparos enemigos
+	 * 
+	 * @param disparo El disparo
 	 */
 	public void agregarCapaDisparosEnemigos(Disparo disparo) {
 		capaDisparosEnemigos.add(disparo);
 	}
 
 	/**
-	 * 
+	 * Vacia las capas registradas en el atributo de capasLimpieza
 	 */
 	public void vaciarCapas() {
 		for (LinkedBlockingDeque<Dibujo> capa : capasLimpieza) {
@@ -371,7 +465,9 @@ public class Motor extends Thread {
 	}
 
 	/**
-	 * 
+	 * Elimina de las capas los objetos que tengan establecido el atributo vivo como
+	 * false. Una thread pool se encarga de hacer el trabajo. Se espera a que la
+	 * threadpool termine
 	 */
 	private void limpiar() {
 		ExecutorService threadpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -388,7 +484,10 @@ public class Motor extends Thread {
 	}
 
 	/**
-	 * 
+	 * Anima el siguiente fotograma de cada elemento de las capas ejecutando su
+	 * metodo nuevoFotograma al que le pasa el frame actual, delta y
+	 * deltaPorSegundo. Una thread pool se encarga de hacer el trabajo. Se espera a
+	 * que la threadpool termine
 	 */
 	private void animar() {
 		ExecutorService threadpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -402,7 +501,9 @@ public class Motor extends Thread {
 	}
 
 	/**
-	 * 
+	 * Calcula las colisiones favorables al jugador: Impactos de disparos amigos y
+	 * recogida de premios. Una thread pool se encarga de hacer el trabajo. Se
+	 * espera a que la threadpool termine
 	 */
 	private void colisionesFavorables() {
 		ExecutorService threadpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -428,7 +529,6 @@ public class Motor extends Thread {
 		}
 
 		// recorrer colisiones con premios
-		// recorrer meteoritos:
 		if ((escenaActual instanceof Partida)) {
 			Nave nave = ((Partida) escenaActual).getNave();
 			for (Dibujo premio : capaPremios) {
@@ -440,7 +540,9 @@ public class Motor extends Thread {
 	}
 
 	/**
-	 * 
+	 * Calcula las colisiones desfavorables al jugador: Impactos de disparos
+	 * enemigos y colisiones con naves enemigas y meteoritos. Una thread pool se
+	 * encarga de hacer el trabajo. Se espera a que la threadpool termine
 	 */
 	private void colisionesDesfavorables() {
 		if (!(escenaActual instanceof Partida))
