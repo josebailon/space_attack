@@ -29,7 +29,7 @@ import reto8juego.recursos.Recursos;
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public class Nave extends Dibujo implements Colisionable, Disparable {
+public class Nave extends Dibujo implements Disparable {
 	/**
 	 * Fotograma de nave central
 	 */

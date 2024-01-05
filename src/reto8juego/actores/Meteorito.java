@@ -23,7 +23,7 @@ import reto8juego.recursos.Recursos;
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public class Meteorito extends Dibujo implements Disparable, Colisionable {
+public class Meteorito extends Dibujo implements Disparable {
 
 	/**
 	 * Generador aleatorio

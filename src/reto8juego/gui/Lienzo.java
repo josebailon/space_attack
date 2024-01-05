@@ -19,7 +19,7 @@ import reto8juego.motor.Dibujo;
  * 
  * @author Jose Javier Bailon Ortiz
  */
-public class Lienzo extends JPanel implements ActionListener {
+public class Lienzo extends JPanel {
 	
 
 	private static final long serialVersionUID = 1L;
@@ -50,10 +50,7 @@ public class Lienzo extends JPanel implements ActionListener {
 	public void addCapa(LinkedBlockingDeque<Dibujo> capa) {
 		this.capas.add(capa);
 	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-	}
+ 
 
 	
 }
