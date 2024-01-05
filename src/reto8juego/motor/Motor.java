@@ -18,11 +18,11 @@ import reto8juego.gui.Lienzo;
 
 /**
  * <p>
- * Motor de comportamiento del juego. Trabaja en conjuncion a la escena actual
- * establecida. Lanza el limpiado de elementos, la animacion y la deteccion de
- * colisiones cuando toque segun el bucle de fotograma. Organiza los elementos
- * en capas cada una dedicada a un proposito, capas de fondo, de disparos, de
- * naves, de premios y de GUI.
+ * Motor de comportamiento del juego. Sigue el patron singleton. Trabaja en
+ * conjuncion a la escena actual establecida. Lanza el limpiado de elementos, la
+ * animacion y la deteccion de colisiones cuando toque segun el bucle de
+ * fotograma. Organiza los elementos en capas cada una dedicada a un proposito,
+ * capas de fondo, de disparos, de naves, de premios y de GUI.
  * </p>
  * <p>
  * Se trata de un hilo que lleva un seguimiento del tiempo en funcion del cual
@@ -239,10 +239,10 @@ public class Motor extends Thread {
 
 			// detectar colisiones desfavorables
 			colisionesDesfavorables();
- 			// Lanzar el dibujado
+			// Lanzar el dibujado
 			if (lienzo != null)
 				lienzo.repaint();
- 			// limitar frames si el tiempo de procesamiento del frame es menor que lo que
+			// limitar frames si el tiempo de procesamiento del frame es menor que lo que
 			// establece la limitacion
 			limitarFps();
 		}

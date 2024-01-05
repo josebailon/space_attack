@@ -26,7 +26,7 @@ import java.awt.Graphics2D;
  * </p>
  * 
  * <p>
- * El metodo dibujar debe implementandose ejecutando el dibujado del objeto.
+ * El metodo dibujar debe implementarse ejecutando el dibujado del objeto.
  * </p>
  * 
  * @author Jose Javier Bailon Ortiz

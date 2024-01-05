@@ -17,6 +17,7 @@ package reto8juego.config;
  * <li>4-Intervalo de creacion entre enemigos en ms</li>
  * </ul>
  * 
+ * El nue
  * @author Jose Javier Bailon Ortiz
  */
 public class Niveles {
